@@ -1,82 +1,113 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, ScrollView } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function SearchResultStoreComponent({ route, navigation }: any) {
     const { store } = route.params || {};
-    // Verifica se há detalhes disponíveis
-    const storeDetails = store?.details?.[0];
+    const storeDetails = store?.details?.[0]; // Verifica se há detalhes disponíveis
 
     return (
-        <View className="flex-1 items-start justify-start bg-white">
+        <View className="flex-1 bg-white">
             <StatusBar style="auto" />
-            <View className="w-full p-5">
-                <Text className="text-3xl font-OutfitMedium mb-4 text-blue-700">{store?.title || "Detalhes da Loja"}</Text>
 
+            {/* Cabeçalho */}
+            <View className="bg-blue-500 p-5">
+                <Text className="text-2xl font-OutfitBold text-white text-center">{store?.title || "Detalhes da Loja"}</Text>
+            </View>
+
+            {/* Conteúdo Principal */}
+            <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20 }}>
                 {storeDetails ? (
-                    <View>
-                        {/* Informações Gerais */}
-                        <Text className="font-OutfitRegular uppercase text-lg text-blue-700 py-1">INFORMAÇÕES GERAIS</Text>
-                        <Text className="font-OutfitRegular text-lg text-gray-700">
-                            <Text className="font-OutfitMedium text-lg">Endereço:</Text> {storeDetails.address || "Não informado"}
-                        </Text>
-                        <Text className="font-OutfitRegular text-lg text-gray-700">
-                            <Text className="font-OutfitMedium text-lg">Email:</Text> {storeDetails.email || "Não informado"}
-                        </Text>
-                        <Text className="font-OutfitRegular text-lg text-gray-700">
-                            <Text className="font-OutfitMedium text-lg">Telefone:</Text> {storeDetails.phone || "Não informado"}
-                        </Text>
-                        <Text className="font-OutfitRegular text-lg text-gray-700">
-                            <Text className="font-OutfitMedium text-lg">Expediente:</Text> {storeDetails.expedient || "Não informado"}
-                        </Text>
+                    <>
+                        {/* Card de Informações Gerais */}
+                        <InfoCard title="Informações Gerais">
+                            <InfoRow label="Endereço" value={storeDetails.address} />
+                            <InfoRow label="Email" value={storeDetails.email} />
+                            <InfoRow label="Telefone" value={storeDetails.phone} />
+                            <InfoRow label="Expediente" value={storeDetails.expedient} />
+                        </InfoCard>
 
-                        {/* Agendamento */}
-                        <Text className="font-OutfitRegular uppercase text-lg text-blue-700 py-1 mt-5">AGENDAMENTO</Text>
-                        <Text className="font-OutfitRegular text-lg text-gray-700">
-                            <Text className="font-OutfitMedium text-lg">Agendamento:</Text>{" "}
-                            {storeDetails.isScheduling ? "Disponível" : "Indisponível"}
-                        </Text>
+                        {/* Card de Agendamento */}
+                        <InfoCard title="Agendamento">
+                            <InfoRow
+                                label="Disponibilidade"
+                                value={storeDetails.isScheduling ? "Disponível" : "Indisponível"}
+                            />
+                        </InfoCard>
 
-                        {/* Especialidades */}
-                        <Text className="font-OutfitRegular uppercase text-lg text-blue-700 py-1 mt-5">ESPECIALIDADES</Text>
-                        <View className="flex flex-wrap flex-row gap-[10] gap-x-2 mt-1">
-                            {storeDetails?.scheduleOptions && storeDetails?.scheduleOptions.length > 0 ? (
-                                storeDetails?.scheduleOptions.map((item: any) => (
-                                    <Text
-                                        key={item?.speciality}
-                                        className="font-OutfitRegular text-base text-gray-700 px-3 py-1 bg-blue-50 rounded-full"
-                                    >
-                                        {item?.speciality}
-                                    </Text>
-                                ))
+                        {/* Card de Especialidades */}
+                        <InfoCard title="Especialidades">
+                            {storeDetails?.scheduleOptions?.length > 0 ? (
+                                <View className="flex flex-wrap flex-row gap-2">
+                                    {storeDetails.scheduleOptions.map((item: any, index: number) => (
+                                        <Text
+                                            key={index}
+                                            className="px-3 py-1 bg-white text-blue-700 text-base rounded-full font-OutfitRegular"
+                                        >
+                                            {item.speciality}
+                                        </Text>
+                                    ))}
+                                </View>
                             ) : (
                                 <Text className="text-base text-gray-500">Nenhuma especialidade disponível.</Text>
                             )}
-                        </View>
+                        </InfoCard>
 
                         {/* Botão de Agendamento */}
                         {storeDetails.isScheduling && (
-                            <View className="mt-5">
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        navigation.navigate("Categories", {
-                                            screen: "ScheduleScreen",
-                                            params: {
-                                                storeDetails,
-                                            },
-                                        });
-                                    }}
+                            <View className="w-full">
+                                {/* Rodapé */}
+                                {/* Botão: Novo Agendamento */}
+                                <LinearGradient
+                                    colors={['#3b82f6', '#2563eb', '#1e40af']}
+                                    start={{ x: 1, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    className="p-2 rounded-xl items-center"
                                 >
-                                    <Text className="font-OutfitMedium text-white text-lg bg-blue-500 rounded-full p-[3] my-2 text-center">
-                                        Agendar
-                                    </Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            navigation.navigate("Pesquisar", {
+                                                screen: "ScheduleScreen",
+                                                params: { storeDetails },
+                                            })
+                                        }
+                                        className="flex-row items-center gap-4 rounded-0"
+                                    >
+                                        <Text className="font-OutfitMedium text-white text-lg">
+                                            Agendar
+                                        </Text>
+                                    </TouchableOpacity>
+                                </LinearGradient>
                             </View>
                         )}
-                    </View>
+                    </>
                 ) : (
-                    <Text className="text-base text-gray-500">Detalhes não disponíveis.</Text>
+                    <Text className="text-center text-gray-500 text-lg mt-10">
+                        Nenhuma informação disponível.
+                    </Text>
                 )}
-            </View>
+            </ScrollView>
+        </View >
+    );
+}
+
+/* Componente Card para Seções */
+function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <View className="bg-gray-100 p-4 rounded-xl shadow-sm mb-4">
+            <Text className="font-OutfitBold text-lg text-blue-700 mb-2">{title}</Text>
+            {children}
+        </View>
+    );
+}
+
+/* Linha de Informação Individual */
+function InfoRow({ label, value }: { label: string; value: string | undefined }) {
+    return (
+        <View className="flex-row justify-between mb-2">
+            <Text className="font-OutfitMedium text-base text-gray-700">{label}:</Text>
+            <Text className="font-OutfitRegular text-base text-gray-800">{value || "Não informado"}</Text>
         </View>
     );
 }

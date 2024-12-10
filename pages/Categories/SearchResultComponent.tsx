@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
 import { useState, useEffect, useCallback } from "react";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function SearchResultComponent({ route, navigation }: any) {
     const { data } = route.params || { data: [] };
@@ -13,18 +14,18 @@ export default function SearchResultComponent({ route, navigation }: any) {
                 data={subItens}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('Categories', {
+                        onPress={() => navigation.navigate('Pesquisar', {
                             screen: 'SearchResultStore',
                             params: {
                                 store: item
                             }
                         })}
-                        className={"border-b py-3 px-5 border-blue-50 flex-row flex w-full max-w-[99%] justify-between"}>
-                        <Text className="text-gray-800 font-OutfitMedium text-start uppercase">{item.title}</Text>
+                        className={"border-b py-3 px-4 left-1 border-blue-50 flex-row flex w-full max-w-[99%] justify-between items-center"}>
+                        <Text className="text-gray-800 text-lg font-OutfitMedium text-start">{item.title}</Text>
                         <MaterialCommunityIcons
-                            name="message-arrow-right-outline"
-                            size={20}
-                            color={"#1d4ed8"}
+                            name="chevron-right"
+                            size={32}
+                            color={"#888"}
                         />
                     </TouchableOpacity>
                 )}
@@ -40,9 +41,16 @@ export default function SearchResultComponent({ route, navigation }: any) {
                 {data.length > 0 ? (
                     data.map((category: any) => (
                         <View key={category.id} className="">
-                            <Text className="font-OutfitMedium uppercase text-lg text-blue-700 text-start px-5 py-3 bg-blue-50">
-                                {category.title}
-                            </Text>
+                            <LinearGradient
+                                colors={['#3b82f6', '#2563eb', '#1e40af']}
+                                start={{ x: 1, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                                className="p-2 rounded-0"
+                            >
+                                <Text className="font-OutfitMedium uppercase text-lg text-white text-start px-5 py-3">
+                                    {category.title}
+                                </Text>
+                            </LinearGradient>
                             {renderSubItems(category.subItens)}
                         </View>
                     ))

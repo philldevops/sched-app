@@ -246,7 +246,7 @@ export function MainTabs() {
                         <SchedsComponent {...props} />
                     )}
                 </Tab.Screen>
-                <Tab.Screen name="Categories" options={{
+                <Tab.Screen name="Pesquisar" options={{
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="calendar-account-outline" color={color} size={26} />

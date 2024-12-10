@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert, ScrollView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import DropDownPicker from "react-native-dropdown-picker";
+import { CommonActions } from "@react-navigation/native";
 
 // Configuração de idioma para português
 LocaleConfig.locales["pt-br"] = {
@@ -180,10 +181,26 @@ export default function ScheduleComponent({ route, navigation }: any) {
                             `Você confirma o agendamento para:\n\nEspecialidade: ${selectedSpeciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
                             [
                                 { text: "Não", style: "cancel" },
-                                { text: "Sim", onPress: () => {
-                                    Alert.alert("Sucesso", "Agendamento realizado!");
-                                    navigation.navigate('Scheds')
-                                } },
+                                {
+                                    text: "Sim", onPress: () => {
+                                        Alert.alert("Sucesso", "Agendamento realizado!");
+
+                                        //forçar o reset voltar para home/início
+                                        navigation.dispatch(
+                                            CommonActions.reset({
+                                                index: 0,
+                                                routes: [
+                                                    {
+                                                        name: "Scheds",
+                                                        params: {
+                                                            previousRoute: "ScheduleScreen",
+                                                        },
+                                                    },
+                                                ],
+                                            })
+                                        );
+                                    }
+                                },
                             ]
                         );
                     }
