@@ -33,7 +33,7 @@ export default function CategoriesComponent({ navigation }: any) {
 
     const Item = ({ title, id }: { title: string, id: string | any }) => (
         <TouchableOpacity
-            className="bg-gray-100 rounded-xl h-[70px] w-1/2 flex-1 items-center justify-center"
+            className="bg-gray-100 rounded-xl flex-1 flex-row h-[70px] justify-between items-center px-4"
             onPress={() =>
                 navigation.navigate("SearchResult", {
                     data: DATA.filter(item => item.title.toLowerCase().includes(title.toLowerCase())),
@@ -41,13 +41,20 @@ export default function CategoriesComponent({ navigation }: any) {
             }
         >
             <Text className="text-center font-OutfitMedium text-lg text-gray-700">{title}</Text>
+            <View className="left-1">
+                <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={23}
+                    color="#3b82f6"
+                />
+            </View>
         </TouchableOpacity>
     );
 
     return (
         <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
-            
+
             {/* Cabeçalho */}
             <View className="w-full px-4 mb-4">
                 <Text className="font-OutfitBold text-2xl text-gray-800">Categorias</Text>

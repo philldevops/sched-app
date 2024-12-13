@@ -12,8 +12,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native';
 import StoreComponent from '../pages/Stores/StoreComponent';
 import SearchResultStoreComponent from '../pages/Categories/SearchResultStoreComponent';
-import ScheduleComponent from '../pages/Scheds/ScheduleComponent';
+import SchedulingComponent from '../pages/Scheds/SchedulingComponent';
 import SchedsComponent from '../pages/Scheds/SchedsComponent';
+import ScheduleComponent from '../pages/Scheds/ScheduleComponent';
 
 const HIDDEN_ROUTES: any[] = [];
 
@@ -84,50 +85,79 @@ const CategoryStackScreen = React.memo(({ }: any) => (
             headerTintColor: '#374151',
         }}>
             {(props) => (
-                <ScheduleComponent {...props} />
+                <SchedulingComponent {...props} />
             )}
         </CategoryStack.Screen>
+        {/* <CategoryStack.Screen name="ScheduleOnCategoryDetails" options={{
+            headerTitle: 'Detalhes do Agendamento',
+            headerShown: true,
+            headerTitleStyle: {
+                fontFamily: 'Outfit-SemiBold',
+                fontSize: 20,
+            },
+            headerTitleAlign: 'left',
+            headerStyle: {
+                backgroundColor: '#fff',
+            },
+            headerTintColor: '#374151',
+        }}>
+            {(props) => (
+                <ScheduleComponent {...props} />
+            )}
+        </CategoryStack.Screen> */}
     </CategoryStack.Navigator >
 ));
 
-// const SchedsStackScreen = React.memo(({ }: any) => (
-//     <SchedsStack.Navigator screenOptions={{
-//         headerShown: false,
-//     }}>
-//         <SchedsStack.Screen name="SchedsScreen" options={{
-//             headerShown: false,
-//         }}>
-//             {(props) => (
-//                 <SchedsComponent {...props} />
-//             )}
-//         </SchedsStack.Screen>
-//         {/* <SchedsStack.Screen name="ScheduleScreen" options={{
-//             headerShown: false,
-//         }}>
-//             {(props) => (
-//                 <ScheduleComponent {...props} />
-//             )}
-//         </SchedsStack.Screen> */}
-//         {/* <SchedsStack.Screen name="SearchResult" options={{
-//             headerShown: true,
-//             headerTitle: 'Resultados encontrados',
-//             headerTitleStyle: {
-//                 fontFamily: 'Outfit-SemiBold',
-//                 fontSize: 18,
-//             },
-//             //headerShadowVisible: false,
-//             headerTitleAlign: 'left',
-//             headerStyle: {
-//                 backgroundColor: '#fff',
-//             },
-//             headerTintColor: '#374151',
-//         }}>
-//             {(props) => (
-//                 <SearchResultComponent {...props} />
-//             )}
-//         </SchedsStack.Screen> */}
-//     </SchedsStack.Navigator >
-// ));
+const SchedsStackScreen = React.memo(({ navigation }: any) => (
+    <SchedsStack.Navigator screenOptions={{
+        //headerShown: false,
+    }}>
+        <SchedsStack.Screen
+            name="SchedsScreen"
+            options={{
+                headerTitle: 'Meus Agendamentos',
+                headerShown: true,
+                headerTitleStyle: {
+                    fontFamily: 'Outfit-SemiBold',
+                    fontSize: 20,
+                },
+                headerTitleAlign: 'left',
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#374151',
+                headerLeft: () => (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Home')}
+                        style={{ marginRight: 35 }} // Adicionando margem à esquerda
+                    >
+                        <MaterialCommunityIcons name="arrow-left" size={22} color="#333" />
+                    </TouchableOpacity>
+                ),
+            }}>
+            {(props) => (
+                <SchedsComponent {...props} />
+            )}
+        </SchedsStack.Screen>
+        <SchedsStack.Screen name="ScheduleDetails" options={{
+            headerTitle: 'Detalhes do Agendamento',
+            headerShown: true,
+            headerTitleStyle: {
+                fontFamily: 'Outfit-SemiBold',
+                fontSize: 20,
+            },
+            headerTitleAlign: 'left',
+            headerStyle: {
+                backgroundColor: '#fff',
+            },
+            headerTintColor: '#374151',
+        }}>
+            {(props) => (
+                <ScheduleComponent {...props} />
+            )}
+        </SchedsStack.Screen>
+    </SchedsStack.Navigator >
+));
 
 export function MainTabs() {
     const navigation = useNavigation();
@@ -213,39 +243,6 @@ export function MainTabs() {
                         )
                     }}
                 />
-                <Tab.Screen name="Scheds" options={{
-                    tabBarItemStyle: { 
-                        display: "none" 
-                    },
-                    tabBarStyle: {
-                        display: "none"
-                    },
-                    headerShown: true,
-                    headerTitle: "Meus Agendamentos",
-                    headerTitleStyle: {
-                        fontFamily: 'Outfit-SemiBold',
-                        fontSize: 20,
-                        left: 45
-                    },
-                    headerShadowVisible: true,
-                    headerTitleAlign: 'left',
-                    headerStyle: {
-                        backgroundColor: '#fff',
-                    },
-                    headerTintColor: '#333',
-                    headerLeft: () => (
-                        <TouchableOpacity
-                            onPress={() => navigation.goBack()}
-                            style={{ flexDirection: 'row', gap: 2, alignItems: 'flex-start', padding: 0, top: 0, left: 15 }}
-                        >
-                            <MaterialCommunityIcons name="arrow-left" size={25} color="#333" />
-                        </TouchableOpacity>
-                    )
-                }}>
-                    {(props) => (
-                        <SchedsComponent {...props} />
-                    )}
-                </Tab.Screen>
                 <Tab.Screen name="Pesquisar" options={{
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
@@ -254,14 +251,16 @@ export function MainTabs() {
                 }}>
                     {() => <CategoryStackScreen />}
                 </Tab.Screen>
-                {/* <Tab.Screen name="Scheds" options={{
+                <Tab.Screen name="Scheds" options={{
                     headerShown: false,
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="calendar-weekend-outline" color={color} size={26} />
-                    ),
+                    tabBarItemStyle: { display: "none" },
+                    tabBarStyle: {
+                        display: "none"
+                    },
+                    tabBarIcon: () => null
                 }}>
-                    {() => <SchedsStackScreen />}
-                </Tab.Screen> */}
+                    {() => <SchedsStackScreen navigation={navigation} />}
+                </Tab.Screen>
             </Tab.Navigator>
         </View>
     );

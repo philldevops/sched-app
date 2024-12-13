@@ -9,7 +9,6 @@ export default function HomeComponent({ navigation }: any) {
         <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
 
-            {/* Cabeçalho */}
             <View className="items-center my-4">w
                 <Text className="font-OutfitBold text-2xl text-gray-800">Bem-vindo!</Text>
                 <Text className="font-OutfitRegular text-lg text-gray-500">
@@ -17,9 +16,7 @@ export default function HomeComponent({ navigation }: any) {
                 </Text>
             </View>
 
-            {/* Botões de ação */}
             <View className="flex-1 px-4 justify-start gap-4">
-                {/* Botão: Meus Agendamentos */}
                 <LinearGradient
                     colors={['#3b82f6', '#2563eb', '#1e40af']}
                     start={{ x: 1, y: 0 }}
@@ -37,7 +34,6 @@ export default function HomeComponent({ navigation }: any) {
                     </TouchableOpacity>
                 </LinearGradient>
 
-                {/* Botão: Novo Agendamento */}
                 <LinearGradient
                     colors={['#34d399', '#10b981', '#047857']}
                     start={{ x: 1, y: 0 }}
@@ -55,7 +51,6 @@ export default function HomeComponent({ navigation }: any) {
                     </TouchableOpacity>
                 </LinearGradient>
 
-                {/* Botão: Ajuda */}
                 <LinearGradient
                     colors={['#f59e0b', '#d97706', '#b45309']}
                     start={{ x: 1, y: 0 }}
@@ -74,7 +69,6 @@ export default function HomeComponent({ navigation }: any) {
                 </LinearGradient>
             </View>
 
-            {/* Rodapé */}
             <View className="items-center my-4">
                 <Text className="font-OutfitRegular text-gray-400">
                     © 2024 Seu App de Agendamento

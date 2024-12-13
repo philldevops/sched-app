@@ -13,6 +13,7 @@ export const DATA = [
                         phone: "(11) 98765-4321",
                         expedient: "Seg a Sex: 8h às 18h",
                         slug: "Clínica Biama",
+                        observations: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non reiciendis nostrum minus velit totam commodi harum doloribus labore nemo ut, ad, deserunt dicta optio aut maxime delectus ullam repellendus tempore?",
                         isScheduling: 1,
                         scheduleOptions: [
                             {
@@ -55,6 +56,7 @@ export const DATA = [
                         phone: "(11) 99876-5432",
                         expedient: "Seg a Sab: 9h às 17h",
                         slug: "BabyLab",
+                        observations: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non reiciendis nostrum minus velit totam commodi harum doloribus labore nemo ut, ad, deserunt dicta optio aut maxime delectus ullam repellendus tempore?",
                         isScheduling: 1,
                         scheduleOptions: [
                             {
@@ -95,6 +97,7 @@ export const DATA = [
                     phone: '(21) 97654-3210',
                     expedient: 'Seg a Sex: 9h às 18h',
                     slug: 'Clínica Fernanda',
+                    observations: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non reiciendis nostrum minus velit totam commodi harum doloribus labore nemo ut, ad, deserunt dicta optio aut maxime delectus ullam repellendus tempore?",
                     isScheduling: 1,
                     scheduleOptions: [
                         {
@@ -135,6 +138,7 @@ export const DATA = [
                     phone: '(21) 99876-2109',
                     expedient: 'Seg a Sab: 10h às 20h',
                     slug: 'Clínica LuxLab',
+                    observations: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non reiciendis nostrum minus velit totam commodi harum doloribus labore nemo ut, ad, deserunt dicta optio aut maxime delectus ullam repellendus tempore?",
                     isScheduling: 1,
                     scheduleOptions: [
                         {

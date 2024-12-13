@@ -1,8 +1,6 @@
-import { Text, View, TextInput, TouchableOpacity, FlatList, Alert } from "react-native";
+import { Text, View, TouchableOpacity, FlatList } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import Constants from "expo-constants";
-import { useState, useEffect, useCallback } from "react";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function SearchResultComponent({ route, navigation }: any) {
@@ -12,50 +10,89 @@ export default function SearchResultComponent({ route, navigation }: any) {
         return (
             <FlatList
                 data={subItens}
+                focusable={false}
                 renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Pesquisar', {
-                            screen: 'SearchResultStore',
-                            params: {
-                                store: item
+                    <>
+                        {/* <LinearGradient
+                            colors={["#ff6b6b", "#ffcc00", "#1dd1a1", "#54a0ff", "#5f27cd"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={{ padding: 2, borderRadius: 10 }}
+                            className="mb-2"
+                        >
+                            <View className="bg-white rounded-lg">
+                                <TouchableOpacity
+                                    focusable={false}
+                                    onPress={() => { }}
+                                    className="flex-row items-center justify-between px-4 py-3 rounded-lg"
+                                >
+                                    <View className="flex-1">
+                                        <Text className="text-gray-800 text-base font-OutfitMedium">
+                                            {item.title}
+                                        </Text>
+                                        <Text className="text-gray-500 font-OutfitRegular text-sm mt-1">
+                                            Clique para ver mais detalhes
+                                        </Text>
+                                    </View>
+                                    <MaterialCommunityIcons
+                                        name="chevron-right"
+                                        size={28}
+                                        color="#333"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </LinearGradient> */}
+                        <TouchableOpacity
+                            focusable={false}
+                            onPress={() =>
+                                navigation.navigate("Pesquisar", {
+                                    screen: "SearchResultStore",
+                                    params: {
+                                        store: item,
+                                    },
+                                })
                             }
-                        })}
-                        className={"border-b py-3 px-4 left-1 border-blue-50 flex-row flex w-full max-w-[99%] justify-between items-center"}>
-                        <Text className="text-gray-800 text-lg font-OutfitMedium text-start">{item.title}</Text>
-                        <MaterialCommunityIcons
-                            name="chevron-right"
-                            size={32}
-                            color={"#888"}
-                        />
-                    </TouchableOpacity>
+                            className="flex-row items-center justify-between px-4 py-3 bg-white rounded-lg border mb-1 border-gray-200"
+                        >
+                            <View className="flex-1">
+                                <Text className="text-gray-800 text-base font-OutfitMedium">
+                                    {item.title}
+                                </Text>
+                                <Text className="text-gray-500 font-OutfitRegular text-sm mt-1">
+                                    Clique para ver mais detalhes
+                                </Text>
+                            </View>
+                            <MaterialCommunityIcons
+                                name="chevron-right"
+                                size={28}
+                                color="#2563eb"
+                            />
+                        </TouchableOpacity>
+                    </>
                 )}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={(item) => item.id.toString()}
+                showsVerticalScrollIndicator={false}
             />
         );
     };
 
     return (
-        <View className="flex-1 bg-white">
-            <StatusBar style="auto" />
-            <View className="w-full flex-1">
+        <View className="flex-1 bg-[#fbfcfc]">
+            <StatusBar style="dark" />
+            <View className="flex-1">
                 {data.length > 0 ? (
                     data.map((category: any) => (
-                        <View key={category.id} className="">
-                            <LinearGradient
-                                colors={['#3b82f6', '#2563eb', '#1e40af']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 0, y: 1 }}
-                                className="p-2 rounded-0"
-                            >
-                                <Text className="font-OutfitMedium uppercase text-lg text-white text-start px-5 py-3">
-                                    {category.title}
-                                </Text>
-                            </LinearGradient>
-                            {renderSubItems(category.subItens)}
+                        <View key={category.id} className="mb-4">
+                            <Text className="text-blue-600 text-base font-OutfitBold uppercase px-4 mt-6 mb-2">
+                                {category.title}
+                            </Text>
+                            <View className="mx-2" focusable={false}>
+                                {renderSubItems(category.subItens)}
+                            </View>
                         </View>
                     ))
                 ) : (
-                    <Text className="font-OutfitMedium text-lg text-gray-700 py-3 text-center">
+                    <Text className="text-gray-500 text-lg font-OutfitMedium text-center mt-5">
                         Nenhum resultado encontrado.
                     </Text>
                 )}
