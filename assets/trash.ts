@@ -1,7 +1,7 @@
 export const DATA = [
     {
         id: 78,
-        title: "Saúde",
+        title: "Exames Laboratoriais",
         subItens: [
             {
                 id: 209,
@@ -18,28 +18,67 @@ export const DATA = [
                         scheduleOptions: [
                             {
                                 speciality: "Clínica Geral",
-                                availableSlots: [
-                                    { date: "2024-12-02", times: ["Manhã", "Tarde"] },
-                                    { date: "2024-12-09", times: ["Manhã"] },
+                                doctors: [
+                                    {
+                                        name: "Rafael Brito",
+                                        availableSlots: [
+                                            { date: "2024-12-02", times: ["Manhã"] },
+                                            { date: "2024-12-09", times: ["Manhã", "Tarde"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
+                                    {
+                                        name: "Joana Darque",
+                                        availableSlots: [
+                                            { date: "2024-12-02", times: ["Tarde"] },
+                                            { date: "2024-12-09", times: ["Manhã"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 400.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                             {
                                 speciality: "Pediatria",
-                                availableSlots: [
-                                    { date: "2024-12-03", times: ["Tarde"] },
-                                    { date: "2024-12-10", times: ["Manhã", "Tarde"] },
+                                doctors: [
+                                    {
+                                        name: "Dr. Pedro Silva",
+                                        availableSlots: [
+                                            { date: "2024-12-03", times: ["Tarde"] },
+                                            { date: "2024-12-10", times: ["Manhã"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
+                                    {
+                                        name: "Dra. Maria Oliveira",
+                                        availableSlots: [
+                                            { date: "2024-12-10", times: ["Tarde"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                             {
                                 speciality: "Cardiologia",
-                                availableSlots: [
-                                    { date: "2024-12-11", times: ["Manhã"] },
+                                doctors: [
+                                    {
+                                        name: "Dr. Carlos Almeida",
+                                        availableSlots: [
+                                            { date: "2024-12-11", times: ["Manhã"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                             {
                                 speciality: "Dermatologia",
-                                availableSlots: [
-                                    { date: "2024-12-27", times: ["Tarde"] },
+                                doctors: [
+                                    {
+                                        name: "Dra. Laura Souza",
+                                        availableSlots: [
+                                            { date: "2024-12-27", times: ["Tarde"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                         ],
@@ -61,21 +100,45 @@ export const DATA = [
                         scheduleOptions: [
                             {
                                 speciality: "Pediatria",
-                                availableSlots: [
-                                    { date: "2024-12-02", times: ["Manhã", "Tarde"] },
-                                    { date: "2024-12-03", times: ["Tarde"] },
+                                doctors: [
+                                    {
+                                        name: "Dra. Julia Santos",
+                                        availableSlots: [
+                                            { date: "2024-12-02", times: ["Manhã", "Tarde"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
+                                    {
+                                        name: "Dr. Marcos Lima",
+                                        availableSlots: [
+                                            { date: "2024-12-03", times: ["Tarde"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                             {
                                 speciality: "Neonatologia",
-                                availableSlots: [
-                                    { date: "2024-12-09", times: ["Manhã"] },
+                                doctors: [
+                                    {
+                                        name: "Dra. Ana Mendes",
+                                        availableSlots: [
+                                            { date: "2024-12-09", times: ["Manhã"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                             {
                                 speciality: "Testes Laboratoriais Infantis",
-                                availableSlots: [
-                                    { date: "2024-12-10", times: ["Tarde"] },
+                                doctors: [
+                                    {
+                                        name: "Dr. Roberto Silva",
+                                        availableSlots: [
+                                            { date: "2024-12-10", times: ["Tarde"] },
+                                        ],
+                                        schedObservations: "O valor da Consulta é de R$ 190.00, pagamento apenas em dinheiro, ou por meio do plano de saúde UNIMED."
+                                    },
                                 ],
                             },
                         ],
@@ -86,100 +149,52 @@ export const DATA = [
     },
     {
         id: 10,
-        title: 'Estética',
-        subItens: [
-            {
-                id: 509,
-                title: 'Clínica Fernanda',
-                details: [{
-                    address: 'Rua Bela, 11 - Jardim',
-                    email: 'contato@fernanda.com',
-                    phone: '(21) 97654-3210',
-                    expedient: 'Seg a Sex: 9h às 18h',
-                    slug: 'Clínica Fernanda',
-                    observations: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non reiciendis nostrum minus velit totam commodi harum doloribus labore nemo ut, ad, deserunt dicta optio aut maxime delectus ullam repellendus tempore?",
-                    isScheduling: 1,
-                    scheduleOptions: [
-                        {
-                            speciality: "Dermatologia Estética",
-                            availableSlots: [
-                                { date: "2024-12-02", times: ["Manhã", "Tarde"] },
-                                { date: "2024-12-09", times: ["Manhã"] },
-                            ],
-                        },
-                        {
-                            speciality: "Limpeza de Pele",
-                            availableSlots: [
-                                { date: "2024-12-03", times: ["Tarde"] },
-                                { date: "2024-12-10", times: ["Manhã", "Tarde"] },
-                            ],
-                        },
-                        {
-                            speciality: "Aplicação de Botox",
-                            availableSlots: [
-                                { date: "2024-12-11", times: ["Manhã"] },
-                            ],
-                        },
-                        {
-                            speciality: "Tratamentos Anti-idade",
-                            availableSlots: [
-                                { date: "2024-12-27", times: ["Tarde"] },
-                            ],
-                        },
-                    ],
-                }]
-            },
-            {
-                id: 510,
-                title: 'Clínica LuxLab',
-                details: [{
-                    address: 'Av. Lux, 234 - Centro',
-                    email: 'contato@luxlab.com',
-                    phone: '(21) 99876-2109',
-                    expedient: 'Seg a Sab: 10h às 20h',
-                    slug: 'Clínica LuxLab',
-                    observations: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Non reiciendis nostrum minus velit totam commodi harum doloribus labore nemo ut, ad, deserunt dicta optio aut maxime delectus ullam repellendus tempore?",
-                    isScheduling: 1,
-                    scheduleOptions: [
-                        {
-                            speciality: "Procedimentos a Laser",
-                            availableSlots: [
-                                { date: "2024-12-02", times: ["Manhã", "Tarde"] },
-                                { date: "2024-12-09", times: ["Manhã"] },
-                            ],
-                        },
-                        {
-                            speciality: "Rejuvenescimento Facial",
-                            availableSlots: [
-                                { date: "2024-12-03", times: ["Tarde"] },
-                                { date: "2024-12-10", times: ["Manhã", "Tarde"] },
-                            ],
-                        },
-                        {
-                            speciality: "Microagulhamento",
-                            availableSlots: [
-                                { date: "2024-12-11", times: ["Manhã"] },
-                            ],
-                        },
-                        {
-                            speciality: "Peelings Químicos",
-                            availableSlots: [
-                                { date: "2024-12-27", times: ["Tarde"] },
-                            ],
-                        },
-                    ],
-                }]
-            },
-        ]
-    },
-    {
-        id: 10,
-        title: 'Petshop',
+        title: 'Odontologia',
         subItens: []
     },
     {
         id: 49,
-        title: 'Lazer',
+        title: 'Clínicas Gerais',
         subItens: []
-    }
+    },
+    {
+        id: 56,
+        title: 'Oftalmologia',
+        subItens: []
+    },
+    {
+        id: 57,
+        title: 'Dermatologia',
+        subItens: []
+    },
+    {
+        id: 58,
+        title: 'Cardiologia',
+        subItens: []
+    },
+    {
+        id: 59,
+        title: 'Pediatria',
+        subItens: []
+    },
+    {
+        id: 60,
+        title: 'Ginecologia e Obstetrícia',
+        subItens: []
+    },
+    {
+        id: 61,
+        title: 'Ortopedia',
+        subItens: []
+    },
+    {
+        id: 62,
+        title: 'Medicina do Trabalho',
+        subItens: []
+    },
+    {
+        id: 63,
+        title: 'Psiquiatria',
+        subItens: []
+    },
 ];

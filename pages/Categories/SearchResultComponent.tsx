@@ -13,35 +13,6 @@ export default function SearchResultComponent({ route, navigation }: any) {
                 focusable={false}
                 renderItem={({ item }) => (
                     <>
-                        {/* <LinearGradient
-                            colors={["#ff6b6b", "#ffcc00", "#1dd1a1", "#54a0ff", "#5f27cd"]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={{ padding: 2, borderRadius: 10 }}
-                            className="mb-2"
-                        >
-                            <View className="bg-white rounded-lg">
-                                <TouchableOpacity
-                                    focusable={false}
-                                    onPress={() => { }}
-                                    className="flex-row items-center justify-between px-4 py-3 rounded-lg"
-                                >
-                                    <View className="flex-1">
-                                        <Text className="text-gray-800 text-base font-OutfitMedium">
-                                            {item.title}
-                                        </Text>
-                                        <Text className="text-gray-500 font-OutfitRegular text-sm mt-1">
-                                            Clique para ver mais detalhes
-                                        </Text>
-                                    </View>
-                                    <MaterialCommunityIcons
-                                        name="chevron-right"
-                                        size={28}
-                                        color="#333"
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </LinearGradient> */}
                         <TouchableOpacity
                             focusable={false}
                             onPress={() =>

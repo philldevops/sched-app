@@ -15,6 +15,9 @@ import SearchResultStoreComponent from '../pages/Categories/SearchResultStoreCom
 import SchedulingComponent from '../pages/Scheds/SchedulingComponent';
 import SchedsComponent from '../pages/Scheds/SchedsComponent';
 import ScheduleComponent from '../pages/Scheds/ScheduleComponent';
+import LoginComponent from '../pages/Auth/LoginComponent';
+import RegisterComponent from '../pages/Auth/RegisterComponent';
+import ForgotPassComponent from '../pages/Auth/ForgotPassComponent';
 
 const HIDDEN_ROUTES: any[] = [];
 
@@ -22,6 +25,7 @@ const Tab = createBottomTabNavigator();
 
 const CategoryStack = createNativeStackNavigator();
 const SchedsStack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
 
 const CategoryStackScreen = React.memo(({ }: any) => (
     <CategoryStack.Navigator screenOptions={{
@@ -159,6 +163,77 @@ const SchedsStackScreen = React.memo(({ navigation }: any) => (
     </SchedsStack.Navigator >
 ));
 
+
+const AuthStackScreen = React.memo(({ navigation }: any) => (
+    <AuthStack.Navigator screenOptions={{
+        //headerShown: false,
+    }}>
+        <AuthStack.Screen
+            name="LoginScreen"
+            options={{
+                headerShown: false,
+                // headerTitle: 'Meus Agendamentos',
+                // headerShown: true,
+                // headerTitleStyle: {
+                //     fontFamily: 'Outfit-SemiBold',
+                //     fontSize: 20,
+                // },
+                // headerTitleAlign: 'left',
+                // headerStyle: {
+                //     backgroundColor: '#fff',
+                // },
+                // headerTintColor: '#374151',
+                // headerLeft: () => (
+                //     <TouchableOpacity
+                //         onPress={() => navigation.navigate('Home')}
+                //         style={{ marginRight: 35 }} // Adicionando margem à esquerda
+                //     >
+                //         <MaterialCommunityIcons name="arrow-left" size={22} color="#333" />
+                //     </TouchableOpacity>
+                // ),
+            }}>
+            {(props) => (
+                <LoginComponent {...props} />
+            )}
+        </AuthStack.Screen>
+        <AuthStack.Screen name="RegisterScreen" options={{
+            headerTitle: 'Cadastre-se',
+            headerShown: true,
+            headerTitleStyle: {
+                fontFamily: 'Outfit-SemiBold',
+                fontSize: 20,
+            },
+            headerTitleAlign: 'left',
+            headerStyle: {
+                backgroundColor: '#fff',
+            },
+            headerTintColor: '#374151',
+        }}>
+            {(props) => (
+                <RegisterComponent {...props} />
+            )}
+        </AuthStack.Screen>
+        <AuthStack.Screen name="ForgotScreen" options={{
+            headerTitle: 'Redefinir Senha',
+            headerShown: true,
+            headerTitleStyle: {
+                fontFamily: 'Outfit-SemiBold',
+                fontSize: 20,
+            },
+            headerTitleAlign: 'left',
+            headerStyle: {
+                backgroundColor: '#fff',
+            },
+            headerTintColor: '#374151',
+        }}>
+            {(props) => (
+                <ForgotPassComponent {...props} />
+            )}
+        </AuthStack.Screen>
+    </AuthStack.Navigator >
+));
+
+
 export function MainTabs() {
     const navigation = useNavigation();
     const appState = useRef(AppState.currentState);
@@ -260,6 +335,14 @@ export function MainTabs() {
                     tabBarIcon: () => null
                 }}>
                     {() => <SchedsStackScreen navigation={navigation} />}
+                </Tab.Screen>
+                <Tab.Screen name="Auth" options={{
+                    headerShown: false,
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="login-variant" color={color} size={26} />
+                    ),
+                }}>
+                    {() => <AuthStackScreen />}
                 </Tab.Screen>
             </Tab.Navigator>
         </View>

@@ -27,14 +27,19 @@ LocaleConfig.defaultLocale = "pt-br";
 export default function SchedulingComponent({ route, navigation }: any) {
     const scheduleOptions = route.params?.storeDetails?.scheduleOptions;
     const slug = route.params?.storeDetails?.slug;
+
     const [selectedSpeciality, setSelectedSpeciality] = useState<string | null>(null);
+    const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
+    const [schedObservations, setSchedObservations] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [availableDates, setAvailableDates] = useState<string[]>([]);
     const [timeSlots, setTimeSlots] = useState<string[]>([]);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
-    const [openDropdown, setOpenDropdown] = useState(false);
+    const [doctorOptions, setDoctorOptions] = useState<any[]>([]);
+    const [openDropdownSpeciality, setOpenDropdownSpeciality] = useState(false);
+    const [openDropdownDoctor, setOpenDropdownDoctor] = useState(false);
 
-    // Atualiza as datas disponíveis ao selecionar uma especialidade
+    // Atualiza os médicos disponíveis ao selecionar uma especialidade
     useEffect(() => {
         if (selectedSpeciality) {
             const selectedOption = scheduleOptions.find(
@@ -42,24 +47,55 @@ export default function SchedulingComponent({ route, navigation }: any) {
             );
 
             if (selectedOption) {
-                const newDates = selectedOption.availableSlots.map((slot: any) => slot.date);
-                setAvailableDates(newDates);
+                setDoctorOptions(selectedOption.doctors.map((doctor: any) => ({
+                    label: doctor.name,
+                    value: doctor.name,
+                })));
+                setSelectedDoctor(null); // Resetar o médico ao trocar de especialidade
+                setAvailableDates([]); // Resetar as datas ao trocar de especialidade
                 setSelectedDate(null); // Resetar a data ao trocar de especialidade
                 setSelectedTime(null); // Resetar o horário ao trocar de especialidade
                 setTimeSlots([]); // Limpar os horários ao trocar de especialidade
-            } else {
-                setAvailableDates([]);
-                setSelectedDate(null); // Resetar a data se não houver especialidade
-                setSelectedTime(null); // Resetar o horário se não houver especialidade
-                setTimeSlots([]); // Limpar os horários ao trocar de especialidade
+            }
+        } else {
+            setDoctorOptions([]);
+            setSelectedDoctor(null);
+            setAvailableDates([]);
+            setSelectedDate(null);
+            setSelectedTime(null);
+            setTimeSlots([]);
+        }
+    }, [selectedSpeciality, scheduleOptions]);
+
+    // Atualiza as datas disponíveis ao selecionar um médico
+    useEffect(() => {
+        if (selectedDoctor) {
+            const selectedOption = scheduleOptions.find(
+                (option: any) => option.speciality === selectedSpeciality
+            );
+
+            const doctor = selectedOption?.doctors.find(
+                (doc: any) => doc.name === selectedDoctor
+            );
+
+            if (doctor) {
+                const newDates = doctor.availableSlots.map((slot: any) => slot.date);
+                setAvailableDates(newDates);
+                setSelectedDate(null); // Resetar a data ao trocar de médico
+                setSelectedTime(null); // Resetar o horário ao trocar de médico
+                setTimeSlots([]); // Limpar os horários ao trocar de médico
+                setSchedObservations(doctor.schedObservations);
             }
         } else {
             setAvailableDates([]);
-            setSelectedDate(null); // Resetar a data se não houver especialidade
-            setSelectedTime(null); // Resetar o horário se não houver especialidade
-            setTimeSlots([]); // Limpar os horários ao trocar de especialidade
+            setSelectedDate(null);
+            setSelectedTime(null);
+            setTimeSlots([]);
+            setSchedObservations(null);
         }
-    }, [selectedSpeciality, scheduleOptions]);
+
+
+    }, [selectedDoctor]);
 
     // Obtém os horários disponíveis para uma data
     const handleDateSelection = (date: string) => {
@@ -68,7 +104,11 @@ export default function SchedulingComponent({ route, navigation }: any) {
             (option: any) => option.speciality === selectedSpeciality
         );
 
-        const selectedSlot = selectedOption?.availableSlots.find(
+        const doctor = selectedOption?.doctors.find(
+            (doc: any) => doc.name === selectedDoctor
+        );
+
+        const selectedSlot = doctor?.availableSlots.find(
             (slot: any) => slot.date === date
         );
 
@@ -99,16 +139,19 @@ export default function SchedulingComponent({ route, navigation }: any) {
     }, {});
 
     return (
-        <View className="flex-1 bg-white px-4 py-4">
-            <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="flex-1 bg-white">
+            <ScrollView className="px-4 py-4" showsVerticalScrollIndicator={true} contentContainerStyle={{
+                paddingBottom: 40,
+                elevation: 40
+            }}>
                 <StatusBar style="auto" />
 
                 <Text className="font-OutfitMedium text-2xl text-blue-700 mb-4">{slug}</Text>
 
                 <Text className="font-OutfitMedium text-lg text-gray-700 mb-2">1. Selecione uma especialidade:</Text>
                 <DropDownPicker
-                    open={openDropdown}
-                    setOpen={setOpenDropdown}
+                    open={openDropdownSpeciality}
+                    setOpen={setOpenDropdownSpeciality}
                     value={selectedSpeciality}
                     setValue={setSelectedSpeciality}
                     items={scheduleOptions.map((option: any) => ({
@@ -119,11 +162,39 @@ export default function SchedulingComponent({ route, navigation }: any) {
                     style={{ borderColor: "#D1D5DB" }}
                     dropDownContainerStyle={{ borderColor: "#D1D5DB" }}
                     textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
+                    zIndex={3000}
+                    zIndexInverse={1000}
                 />
+
+                {doctorOptions.length > 0 && (
+                    <>
+                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-3">2. Selecione um médico:</Text>
+                        <DropDownPicker
+                            open={openDropdownDoctor}
+                            setOpen={setOpenDropdownDoctor}
+                            value={selectedDoctor}
+                            setValue={setSelectedDoctor}
+                            items={doctorOptions}
+                            placeholder="Selecione um médico"
+                            style={{ borderColor: "#D1D5DB" }}
+                            dropDownContainerStyle={{ borderColor: "#D1D5DB" }}
+                            textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
+                            zIndex={2000}
+                            zIndexInverse={2000}
+                        />
+                    </>
+                )}
+
+                {schedObservations && (
+                    <View className="bg-yellow-100 p-2 px-4 rounded-lg mt-3">
+                        <Text className="text-base font-OutfitBold text-gray-900">Observações</Text>
+                        <Text className="text-base font-OutfitRegular">{schedObservations}</Text>
+                    </View>
+                )}
 
                 {availableDates.length > 0 && (
                     <>
-                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-6">2. Selecione uma data:</Text>
+                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-6">3. Selecione uma data:</Text>
                         <Calendar
                             minDate={availableDates[0]}
                             maxDate={availableDates[availableDates.length - 1]}
@@ -143,7 +214,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
 
                 {timeSlots.length > 0 && (
                     <>
-                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-4">3. Selecione um horário:</Text>
+                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-4">4. Selecione um horário:</Text>
                         <View className="flex-row flex-wrap gap-2">
                             {timeSlots.map((time: string) => (
                                 <TouchableOpacity
@@ -152,8 +223,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                                     onPress={() => setSelectedTime(time)}
                                 >
                                     <Text
-                                        className={`font-OutfitMedium ${selectedTime === time ? "text-white" : "text-gray-700"
-                                            }`}
+                                        className={`font-OutfitMedium ${selectedTime === time ? "text-white" : "text-gray-700"}`}
                                     >
                                         {time}
                                     </Text>
@@ -162,67 +232,66 @@ export default function SchedulingComponent({ route, navigation }: any) {
                         </View>
                     </>
                 )}
-            </ScrollView>
 
-            <TouchableOpacity
-                focusable={false}
-                className={`flex-row items-center justify-between px-4 py-3 rounded-lg ${selectedTime ? "bg-blue-500" : "bg-gray-200"}`}
-                onPress={() => {
-                    if (!selectedSpeciality || !selectedDate || !selectedTime) {
-                        Alert.alert("Erro", "Por favor, preencha todos os campos antes de confirmar.");
-                        return;
-                    }
+                <TouchableOpacity
+                    focusable={false}
+                    className={`flex-row items-center justify-between px-4 py-3 rounded-lg mt-4 ${selectedTime ? "bg-blue-500" : "bg-gray-200"}`}
+                    onPress={() => {
+                        if (!selectedSpeciality || !selectedDoctor || !selectedDate || !selectedTime) {
+                            Alert.alert("Erro", "Por favor, preencha todos os campos antes de confirmar.");
+                            return;
+                        }
 
-                    const formattedDate = new Date(selectedDate).toLocaleDateString('pt-BR');
+                        const formattedDate = new Date(selectedDate).toLocaleDateString('pt-BR');
 
-                    Alert.alert(
-                        "Confirmação de Agendamento",
-                        `Você confirma o agendamento para:\n\nEspecialidade: ${selectedSpeciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
-                        [
-                            { text: "Não", style: "cancel" },
-                            {
-                                text: "Sim",
-                                onPress: () => {
-                                    Alert.alert("Sucesso", "Agendamento realizado!");
+                        Alert.alert(
+                            "Confirmação de Agendamento",
+                            `Você confirma o agendamento para:\n\nEspecialidade: ${selectedSpeciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
+                            [
+                                { text: "Não", style: "cancel" },
+                                {
+                                    text: "Sim",
+                                    onPress: () => {
+                                        Alert.alert("Sucesso", "Agendamento realizado!");
 
-                                    // Redefine o stack atual e navega para ScheduleDetails
-                                    navigation.dispatch(
-                                        CommonActions.reset({
-                                            index: 0, // Define a tela inicial como SchedsScreen
-                                            routes: [
-                                                { name: "Scheds" }, // Scheds é a tab associada ao SchedsStack
-                                            ],
-                                        })
-                                    );
+                                        // Redefine o stack atual e navega para ScheduleDetails
+                                        navigation.dispatch(
+                                            CommonActions.reset({
+                                                index: 0, // Define a tela inicial como SchedsScreen
+                                                routes: [
+                                                    { name: "Scheds" }, // Scheds é a tab associada ao SchedsStack
+                                                ],
+                                            })
+                                        );
 
-                                    // Após resetar o stack, navega para ScheduleDetails
-                                    setTimeout(() => {
-                                        navigation.navigate('Scheds', {
-                                            screen: 'ScheduleDetails',
-                                            params: {},
-                                        });
+                                        // Após resetar o stack, navega para ScheduleDetails
+                                        setTimeout(() => {
+                                            navigation.navigate('Scheds', {
+                                                screen: 'ScheduleDetails',
+                                                params: {},
+                                            });
 
-                                    }, 500); // Timeout curto para garantir o reset
+                                        }, 500); // Timeout curto para garantir o reset
+                                    },
                                 },
-                            },
-                        ]
-                    );
-                }}
-            >
-                <View className="flex-1">
-                    <Text className="text-white text-base font-OutfitBold">
-                        Confirmar Agendamento
-                    </Text>
-                    <Text className="text-white font-OutfitRegular text-sm mt-1">
-                        Clique para ver mais detalhes
-                    </Text>
-                </View>
-                <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={28}
-                    color="#fff"
-                />
-            </TouchableOpacity>
+                            ]
+                        )
+                    }}>
+                    <View className="flex-1">
+                        <Text className="text-white text-base font-OutfitBold">
+                            Confirmar Agendamento
+                        </Text>
+                        <Text className="text-white font-OutfitRegular text-sm mt-1">
+                            Clique para ver mais detalhes
+                        </Text>
+                    </View>
+                    <MaterialCommunityIcons
+                        name="chevron-right"
+                        size={28}
+                        color="#fff"
+                    />
+                </TouchableOpacity>
+            </ScrollView>
         </View>
-    );
-}
+    )
+};

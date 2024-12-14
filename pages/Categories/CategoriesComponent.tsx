@@ -33,14 +33,14 @@ export default function CategoriesComponent({ navigation }: any) {
 
     const Item = ({ title, id }: { title: string, id: string | any }) => (
         <TouchableOpacity
-            className="bg-gray-100 rounded-xl flex-1 flex-row h-[70px] justify-between items-center px-4"
+            className="bg-gray-100 rounded-xl flex-1 max-w-[50%] flex-row h-[70px] justify-between items-center px-4"
             onPress={() =>
                 navigation.navigate("SearchResult", {
                     data: DATA.filter(item => item.title.toLowerCase().includes(title.toLowerCase())),
                 })
             }
         >
-            <Text className="text-center font-OutfitMedium text-lg text-gray-700">{title}</Text>
+            <Text className="text-start font-OutfitMedium text-lg text-gray-700">{title}</Text>
             <View className="left-1">
                 <MaterialCommunityIcons
                     name="chevron-right"

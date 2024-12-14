@@ -7,6 +7,8 @@ export default function SearchResultStoreComponent({ route, navigation }: any) {
     const { store } = route.params || {};
     const storeDetails = store?.details?.[0]; // Verifica se há detalhes disponíveis
 
+    //console.log(JSON.stringify(storeDetails, null, 2))
+
     return (
         <View className="flex-1 bg-gray-50">
             <StatusBar style="dark" />
