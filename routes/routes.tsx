@@ -313,7 +313,10 @@ export function MainTabs() {
                     name="Home"
                     component={HomeComponent}
                     options={{
-                        tabBarLabel: 'Home', headerShown: false, tabBarIcon: ({ color, size }) => (
+                        // title: "Início", //voce pode usar title ou tabBarLabel
+                        tabBarLabel: 'Início', 
+                        headerShown: false, 
+                        tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="home-circle-outline" color={color} size={26} />
                         )
                     }}
@@ -321,7 +324,7 @@ export function MainTabs() {
                 <Tab.Screen name="Pesquisar" options={{
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="calendar-account-outline" color={color} size={26} />
+                        <MaterialCommunityIcons name="magnify" color={color} size={26} />
                     ),
                 }}>
                     {() => <CategoryStackScreen />}
@@ -338,8 +341,9 @@ export function MainTabs() {
                 </Tab.Screen>
                 <Tab.Screen name="Auth" options={{
                     headerShown: false,
+                    title: "Login",
                     tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="login-variant" color={color} size={26} />
+                        <MaterialCommunityIcons name="account-circle-outline" color={color} size={26} />
                     ),
                 }}>
                     {() => <AuthStackScreen />}
