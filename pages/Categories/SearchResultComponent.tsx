@@ -23,7 +23,7 @@ export default function SearchResultComponent({ route, navigation }: any) {
                                     },
                                 })
                             }
-                            className="flex-row items-center justify-between px-4 py-3 bg-white rounded-lg border mb-1 border-gray-200"
+                            className="flex-row items-center justify-between px-4 py-3 bg-white mb-2 border-l-4 border-orange-500 rounded-xl"
                         >
                             <View className="flex-1">
                                 <Text className="text-gray-800 text-base font-OutfitMedium">
@@ -48,16 +48,16 @@ export default function SearchResultComponent({ route, navigation }: any) {
     };
 
     return (
-        <View className="flex-1 bg-[#fbfcfc]">
+        <View className="flex-1 bg-[#f6f8fe]">
             <StatusBar style="dark" />
             <View className="flex-1">
                 {data.length > 0 ? (
                     data.map((category: any) => (
                         <View key={category.id} className="mb-4">
-                            <Text className="text-blue-600 text-base font-OutfitBold uppercase px-4 mt-6 mb-2">
+                            <Text className="text-blue-600 text-base font-OutfitBold uppercase px-4 mt-6 mb-3">
                                 {category.title}
                             </Text>
-                            <View className="mx-2" focusable={false}>
+                            <View className="mx-4" focusable={false}>
                                 {renderSubItems(category.subItens)}
                             </View>
                         </View>

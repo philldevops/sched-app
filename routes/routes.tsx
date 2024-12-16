@@ -10,7 +10,6 @@ import HomeComponent from '../pages/Home/HomeComponent';
 import SearchResultComponent from '../pages/Categories/SearchResultComponent';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native';
-import StoreComponent from '../pages/Stores/StoreComponent';
 import SearchResultStoreComponent from '../pages/Categories/SearchResultStoreComponent';
 import SchedulingComponent from '../pages/Scheds/SchedulingComponent';
 import SchedsComponent from '../pages/Scheds/SchedsComponent';
@@ -92,23 +91,6 @@ const CategoryStackScreen = React.memo(({ }: any) => (
                 <SchedulingComponent {...props} />
             )}
         </CategoryStack.Screen>
-        {/* <CategoryStack.Screen name="ScheduleOnCategoryDetails" options={{
-            headerTitle: 'Detalhes do Agendamento',
-            headerShown: true,
-            headerTitleStyle: {
-                fontFamily: 'Outfit-SemiBold',
-                fontSize: 20,
-            },
-            headerTitleAlign: 'left',
-            headerStyle: {
-                backgroundColor: '#fff',
-            },
-            headerTintColor: '#374151',
-        }}>
-            {(props) => (
-                <ScheduleComponent {...props} />
-            )}
-        </CategoryStack.Screen> */}
     </CategoryStack.Navigator >
 ));
 
@@ -119,61 +101,8 @@ const SchedsStackScreen = React.memo(({ navigation }: any) => (
         <SchedsStack.Screen
             name="SchedsScreen"
             options={{
-                headerTitle: 'Meus Agendamentos',
-                headerShown: true,
-                headerTitleStyle: {
-                    fontFamily: 'Outfit-SemiBold',
-                    fontSize: 20,
-                },
-                headerTitleAlign: 'left',
-                headerStyle: {
-                    backgroundColor: '#fff',
-                },
-                headerTintColor: '#374151',
-                headerLeft: () => (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Home')}
-                        style={{ marginRight: 35 }} // Adicionando margem à esquerda
-                    >
-                        <MaterialCommunityIcons name="arrow-left" size={22} color="#333" />
-                    </TouchableOpacity>
-                ),
-            }}>
-            {(props) => (
-                <SchedsComponent {...props} />
-            )}
-        </SchedsStack.Screen>
-        <SchedsStack.Screen name="ScheduleDetails" options={{
-            headerTitle: 'Detalhes do Agendamento',
-            headerShown: true,
-            headerTitleStyle: {
-                fontFamily: 'Outfit-SemiBold',
-                fontSize: 20,
-            },
-            headerTitleAlign: 'left',
-            headerStyle: {
-                backgroundColor: '#fff',
-            },
-            headerTintColor: '#374151',
-        }}>
-            {(props) => (
-                <ScheduleComponent {...props} />
-            )}
-        </SchedsStack.Screen>
-    </SchedsStack.Navigator >
-));
-
-
-const AuthStackScreen = React.memo(({ navigation }: any) => (
-    <AuthStack.Navigator screenOptions={{
-        //headerShown: false,
-    }}>
-        <AuthStack.Screen
-            name="LoginScreen"
-            options={{
                 headerShown: false,
                 // headerTitle: 'Meus Agendamentos',
-                // headerShown: true,
                 // headerTitleStyle: {
                 //     fontFamily: 'Outfit-SemiBold',
                 //     fontSize: 20,
@@ -191,6 +120,47 @@ const AuthStackScreen = React.memo(({ navigation }: any) => (
                 //         <MaterialCommunityIcons name="arrow-left" size={22} color="#333" />
                 //     </TouchableOpacity>
                 // ),
+            }}>
+            {(props) => (
+                <SchedsComponent {...props} />
+            )}
+        </SchedsStack.Screen>
+        <SchedsStack.Screen name="ScheduleDetails" options={{
+            headerTitle: 'Detalhes do Agendamento',
+            headerShown: true,
+            headerLeft: () => (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('SchedsScreen')}
+                    style={{ marginRight: 35 }} // Adicionando margem à esquerda
+                >
+                    <MaterialCommunityIcons name="arrow-left" size={22} color="#333" />
+                </TouchableOpacity>
+            ),
+            headerTitleStyle: {
+                fontFamily: 'Outfit-SemiBold',
+                fontSize: 20,
+            },
+            headerTitleAlign: 'left',
+            headerStyle: {
+                backgroundColor: '#fff',
+            },
+            headerTintColor: '#374151',
+        }}>
+            {(props) => (
+                <ScheduleComponent {...props} />
+            )}
+        </SchedsStack.Screen>
+    </SchedsStack.Navigator >
+));
+
+const AuthStackScreen = React.memo(({ navigation }: any) => (
+    <AuthStack.Navigator screenOptions={{
+        //headerShown: false,
+    }}>
+        <AuthStack.Screen
+            name="LoginScreen"
+            options={{
+                headerShown: false,
             }}>
             {(props) => (
                 <LoginComponent {...props} />
@@ -291,16 +261,16 @@ export function MainTabs() {
                     //headerShown: HIDDEN_ROUTES.includes(getFocusedRouteNameFromRoute(route)) ? false : true,
                     tabBarStyle: [
                         {
-                            height: 65,
-                            paddingTop: 4,
-                            paddingBottom: 8,
-                            elevation: 0,
+                            height: 70,
+                            paddingTop: 6,
+                            elevation: 50,
                             display: HIDDEN_ROUTES.includes(getFocusedRouteNameFromRoute(route)) ? "none" : "flex",
+                            backgroundColor: '#fff'
                         },
                         null,
                     ],
                     tabBarLabelStyle: {
-                        fontFamily: "Outfit-Medium",
+                        fontFamily: "Outfit-Regular",
                         fontSize: 13,
                         //paddingBottom: 3,
                     },
@@ -314,8 +284,8 @@ export function MainTabs() {
                     component={HomeComponent}
                     options={{
                         // title: "Início", //voce pode usar title ou tabBarLabel
-                        tabBarLabel: 'Início', 
-                        headerShown: false, 
+                        tabBarLabel: 'Início',
+                        headerShown: false,
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="home-circle-outline" color={color} size={26} />
                         )
@@ -331,11 +301,14 @@ export function MainTabs() {
                 </Tab.Screen>
                 <Tab.Screen name="Scheds" options={{
                     headerShown: false,
-                    tabBarItemStyle: { display: "none" },
-                    tabBarStyle: {
-                        display: "none"
-                    },
-                    tabBarIcon: () => null
+                    //tabBarItemStyle: { display: "none" },
+                    // tabBarStyle: {
+                    //     display: "none"
+                    // },
+                    title: "Agendamentos",
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="calendar-check-outline" color={color} size={26} />
+                    ),
                 }}>
                     {() => <SchedsStackScreen navigation={navigation} />}
                 </Tab.Screen>

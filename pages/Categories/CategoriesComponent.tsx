@@ -1,9 +1,26 @@
-import { Text, View, TextInput, TouchableOpacity, FlatList, Alert } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, FlatList, Alert, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
 import { useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { DATA } from "../../assets/trash";
+
+const FindNextStores = ({ navigation }: any) => {
+    return (
+        <View className="bg-blue-500 rounded-2xl p-4 flex-row items-center relative m-3">
+            <View className="flex-1 max-w-[70%]">
+                <Text className="text-white text-start text-xl font-OutfitBold mb-3">
+                    Pesquise ou escolha uma categoria abaixo:
+                </Text>
+            </View>
+            <Image
+                source={require('../../assets/male.png')}
+                className="w-40 h-40 ml-2 absolute right-5 bottom-0"
+                resizeMode="cover"
+            />
+        </View>
+    );
+};
 
 export default function CategoriesComponent({ navigation }: any) {
     const [isblur, setIsBlur] = useState<boolean>(false);
@@ -33,7 +50,8 @@ export default function CategoriesComponent({ navigation }: any) {
 
     const Item = ({ title, id }: { title: string, id: string | any }) => (
         <TouchableOpacity
-            className="bg-gray-100 rounded-xl flex-1 max-w-[50%] flex-row h-[70px] justify-between items-center px-4"
+            className="bg-[#fff] shadow-gray-300 border-l-4 border-blue-500 rounded-xl flex-1 max-w-[50%] flex-row h-[70px] justify-between items-center px-4"
+            style={{ elevation: 5 }}
             onPress={() =>
                 navigation.navigate("SearchResult", {
                     data: DATA.filter(item => item.title.toLowerCase().includes(title.toLowerCase())),
@@ -52,52 +70,46 @@ export default function CategoriesComponent({ navigation }: any) {
     );
 
     return (
-        <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
+        <View className="flex-1 bg-[#f6f8fe]" style={{ paddingTop: Constants.statusBarHeight * 1.3 }}>
             <StatusBar style="auto" />
 
-            {/* Cabeçalho */}
-            <View className="w-full px-4 mb-4">
-                <Text className="font-OutfitBold text-2xl text-gray-800">Categorias</Text>
-                {/* <Text className="font-OutfitRegular text-lg text-gray-500 mt-1">
-                    Encontre o que você precisa de forma rápida e fácil.
-                </Text> */}
-            </View>
-
-            {/* Barra de Pesquisa */}
-            <View className="w-full px-4 mb-4">
-                <View className="relative">
-                    <TextInput
-                        onEndEditing={() => setIsBlur(false)}
-                        onFocus={() => setIsBlur(true)}
-                        autoFocus={true}
-                        onChangeText={text => setSearchValue(text)}
-                        onSubmitEditing={filterData}
-                        value={searchValue}
-                        className={`rounded-full w-full border p-3 pl-4 font-OutfitSemiBold text-gray-900 ${isblur ? "border-blue-600" : "border-gray-200"}`}
-                        placeholder="Pesquise aqui"
-                        placeholderTextColor="#2563eb"
-                    />
-                    <View className="absolute top-[10] right-3">
-                        <TouchableOpacity
-                            disabled={searchValue.trim().length < 3}
-                            onPress={filterData}
-                        >
-                            <MaterialCommunityIcons
-                                name="text-box-search-outline"
-                                size={25}
-                                color={isblur ? "#2563eb" : "#999"}
-                            />
-                        </TouchableOpacity>
+            <FindNextStores />
+            <View className="py-4 pt-0 mx-3 rounded-[22px]">
+                {/* Barra de Pesquisa */}
+                <View className="">
+                    <View className="relative">
+                        <TextInput
+                            onEndEditing={() => setIsBlur(false)}
+                            onFocus={() => setIsBlur(true)}
+                            autoFocus={true}
+                            onChangeText={text => setSearchValue(text)}
+                            onSubmitEditing={filterData}
+                            value={searchValue}
+                            className={`rounded-lg w-full p-4 pl-4 text-lg text-[#666jhvv] font-OutfitMedium border-l-4 border-orange-500 bg-[#fff] shadow-gray-300`}
+                            style={{ elevation: 50 }}
+                            placeholder="Pesquise aqui"
+                            placeholderTextColor="#333"
+                        />
+                        <View className="absolute bottom-4 right-3">
+                            <TouchableOpacity
+                                disabled={searchValue.trim().length < 3}
+                                onPress={filterData}
+                            >
+                                <MaterialCommunityIcons
+                                    name="text-box-search-outline"
+                                    size={32}
+                                    color={"#f97316"}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
 
-            {/* Instrução */}
-            <Text className="font-OutfitMedium text-base text-gray-700 py-3 text-center">
-                Pesquise uma área ou escolha uma categoria abaixo:
-            </Text>
-
             {/* Lista de Categorias */}
+            <View className="w-full m-4">
+                <Text className="font-OutfitBold text-2xl text-gray-900">Categorias</Text>
+            </View>
             <FlatList
                 data={DATA}
                 renderItem={({ item }) => <Item title={item.title} id={item.id} />}

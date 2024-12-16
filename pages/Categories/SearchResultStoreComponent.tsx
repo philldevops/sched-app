@@ -52,7 +52,7 @@ export default function SearchResultStoreComponent({ route, navigation }: any) {
                                     {storeDetails.scheduleOptions.map((item: any, index: number) => (
                                         <Text
                                             key={index}
-                                            className="px-3 py-1 bg-gray-200 text-gray-900 text-base rounded-lg font-OutfitRegular"
+                                            className="px-3 py-1 border-blue-500 border-l-4 bg-[#f6f8fe] text-gray-900 text-base rounded-lg font-OutfitRegular"
                                         >
                                             {item.speciality}
                                         </Text>

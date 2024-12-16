@@ -11,22 +11,22 @@ export default function RegisterComponent({ route, navigation }: any) {
             <View className="space-y-4">
                 <TextInput
                     placeholder="Nome completo"
-                    className="border border-gray-300 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
                 />
                 <TextInput
                     placeholder="E-mail"
                     keyboardType="email-address"
-                    className="border border-gray-300 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
                 />
                 <TextInput
                     placeholder="Senha"
                     secureTextEntry
-                    className="border border-gray-300 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
                 />
                 <TextInput
                     placeholder="Confirmar senha"
                     secureTextEntry
-                    className="border border-gray-300 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
                 />
             </View>
 

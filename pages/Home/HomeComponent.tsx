@@ -10,10 +10,10 @@ const DoctorCard = ({ navigation }: any) => {
             {/* Saudações e ícone de notificação */}
             <View className="flex-row justify-between items-center mb-10">
                 <View>
-                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, Philip!</Text>
-                    <Text className="text-gray-500 font-OutfitMedium">Como você está se sentindo hoje?</Text>
+                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, Philip</Text>
+                    <Text className="text-gray-500 text-base font-OutfitMedium">Como você está se sentindo hoje?</Text>
                 </View>
-                <TouchableOpacity className="bg-gray-100 rounded-full p-2">
+                <TouchableOpacity className="bg-gray-100 rounded-full p-2 self-start">
                     <MaterialCommunityIcons
                         name="bell-outline"
                         className="w-8 h-8"
@@ -44,15 +44,12 @@ const DoctorCard = ({ navigation }: any) => {
     );
 };
 
-
-export default function HomeComponent({ navigation }: any) {
+const NextSched = ({ navigation }: any) => {
     return (
-        <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
-            <StatusBar style="auto" />
-            <DoctorCard navigation={navigation} />
-            <View className="flex-1 p-4 justify-start gap-4">
+        <View className="p-4 justify-start">
+            <View className="gap-4">
                 <Text className="font-OutfitSemiBold text-lg">Próximo Agendamento</Text>
-                <TouchableOpacity className="rounded-xl bg-yellow-200 p-4" onPress={() => navigation.navigate('Scheds', {
+                <TouchableOpacity className="rounded-xl bg-yellow-200 px-4 py-5" onPress={() => navigation.navigate('Scheds', {
                     screen: "ScheduleDetails"
                 })}>
                     <View className="flex-row justify-between items-center">
@@ -82,30 +79,38 @@ export default function HomeComponent({ navigation }: any) {
                         <Text className="font-OutfitMedium">{"17:30h"}</Text>
                     </View>
                 </TouchableOpacity>
-
-                <LinearGradient
-                    colors={['#3b82f6', '#2563eb', '#1e40af']}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    className="p-4 rounded-2xl"
-                >
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Scheds')}
-                        className="flex-row items-center gap-4"
-                    >
-                        <MaterialCommunityIcons name="calendar-check" size={32} color="white" />
-                        <Text className="font-OutfitMedium text-white text-lg">
-                            Meus Agendamentos
-                        </Text>
-                    </TouchableOpacity>
-                </LinearGradient>
             </View>
+        </View>
+    )
+}
 
-            <View className="items-center my-4">
-                <Text className="font-OutfitRegular text-gray-400">
-                    © 2024 Seu App de Agendamento
+const FindNextStores = ({ navigation }: any) => {
+    return (
+        <View className="bg-indigo-500 rounded-2xl p-4 flex-row items-center relative m-4">
+            <View className="flex-1 max-w-[70%]">
+                <Text className="text-white text-start text-lg font-OutfitMedium mb-3">
+                    Encontre clínicas próximas a você.
                 </Text>
+                <TouchableOpacity className="bg-white rounded-full py-2 px-4 self-start" onPress={() => null}>
+                    <Text className="text-blue-500 font-OutfitMedium">Procurar</Text>
+                </TouchableOpacity>
             </View>
+            <Image
+                source={require('../../assets/male.png')}
+                className="w-40 h-52 ml-2 absolute right-5 bottom-0"
+                resizeMode="cover"
+            />
+        </View>
+    );
+};
+
+export default function HomeComponent({ navigation }: any) {
+    return (
+        <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
+            <StatusBar style="auto" />
+            <DoctorCard navigation={navigation} />
+            {/* <FindNextStores navigation={navigation} /> */}
+            <NextSched navigation={navigation} />
         </View>
     );
 }

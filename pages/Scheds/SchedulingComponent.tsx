@@ -139,7 +139,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
     }, {});
 
     return (
-        <View className="flex-1 bg-white">
+        <View className="flex-1 bg-[#f6f8fe]">
             <ScrollView className="px-4 py-4" showsVerticalScrollIndicator={true} contentContainerStyle={{
                 paddingBottom: 40,
                 elevation: 40
@@ -159,8 +159,8 @@ export default function SchedulingComponent({ route, navigation }: any) {
                         value: option.speciality,
                     }))}
                     placeholder="Selecione uma especialidade"
-                    style={{ borderColor: "#D1D5DB" }}
-                    dropDownContainerStyle={{ borderColor: "#D1D5DB" }}
+                    style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }}
+                    dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }} //f97316 orange
                     textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
                     zIndex={3000}
                     zIndexInverse={1000}
@@ -176,8 +176,8 @@ export default function SchedulingComponent({ route, navigation }: any) {
                             setValue={setSelectedDoctor}
                             items={doctorOptions}
                             placeholder="Selecione um médico"
-                            style={{ borderColor: "#D1D5DB" }}
-                            dropDownContainerStyle={{ borderColor: "#D1D5DB" }}
+                            style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }}
+                            dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }} //f97316 orange
                             textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
                             zIndex={2000}
                             zIndexInverse={2000}
@@ -207,6 +207,13 @@ export default function SchedulingComponent({ route, navigation }: any) {
                             theme={{
                                 arrowColor: "#1D4ED8",
                                 textDisabledColor: "rgba(0,0,0,0.1)",
+                            }}
+                            style={{
+                                borderRadius: 20,
+                                height: 325,
+                                boxShadow: '10px',
+                                // borderWidth: 1,
+                                // borderColor: '#3b82f6',
                             }}
                         />
                     </>
