@@ -1,10 +1,41 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
 import Constants from "expo-constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from "expo-web-browser"
+import { useAuth, useOAuth, useUser } from '@clerk/clerk-expo';
+
+WebBrowser.maybeCompleteAuthSession()
 
 export default function LoginComponent({ route, navigation }: any) {
+    const [isLoading, setIsLoading] = useState(false);
+    const googleOAuth = useOAuth({ strategy: "oauth_google" });
+    const { isLoaded, userId, sessionId } = useAuth()
+    const { user } = useUser();
+
+    async function SignIn() {
+        try {
+            setIsLoading(true)
+
+            const oAuthFlow = await googleOAuth.startOAuthFlow()
+
+            if (oAuthFlow.authSessionResult?.type === "success") {
+                if (oAuthFlow.setActive) {
+                    await oAuthFlow.setActive({ session: oAuthFlow.createdSessionId })
+                }
+                Alert.alert('Deu certo!')
+                setIsLoading(false)
+            } else {
+                setIsLoading(false)
+            }
+        } catch (error) {
+            console.log(error)
+            Alert.alert(JSON.stringify(error, null, 2))
+            setIsLoading(false)
+        }
+    }
+
     return (
         <View className="flex-1 bg-white px-6" style={{ paddingTop: Constants.statusBarHeight * 2 }}>
             <StatusBar style="auto" />
@@ -45,10 +76,23 @@ export default function LoginComponent({ route, navigation }: any) {
                 <View className="flex-1 h-px bg-gray-300"></View>
             </View>
 
-            <TouchableOpacity className="border border-gray-300 mt-6 rounded-lg py-3 flex-row items-center justify-center space-x-2">
-                <MaterialCommunityIcons size={28} name='google-plus' />
-                <Text className="text-gray-900 font-OutfitSemiBold">Entrar com Google</Text>
+            <TouchableOpacity onPress={SignIn} className="border border-gray-300 mt-6 rounded-lg py-3 flex-row items-center justify-center space-x-2">
+                {isLoading ? (<ActivityIndicator size={'small'} color={'#333'} />) : (
+                    <>
+                        <MaterialCommunityIcons size={28} name='google-plus' />
+                        <Text className="text-gray-900 font-OutfitSemiBold">Entrar com Google</Text>
+                    </>
+                )}
             </TouchableOpacity>
+
+            {userId && sessionId && (
+                <View className='flex-1'>
+                    <Text>
+                        Hello, {userId} your current active session is {sessionId}
+                    </Text>
+                    <Text>First name: {user?.firstName}</Text>
+                </View>
+            )}
         </View>
     );
 };

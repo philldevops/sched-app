@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, TouchableOpacity, View } from 'react-native';
+import { AppState, TouchableOpacity, View, Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -17,6 +17,8 @@ import ScheduleComponent from '../pages/Scheds/ScheduleComponent';
 import LoginComponent from '../pages/Auth/LoginComponent';
 import RegisterComponent from '../pages/Auth/RegisterComponent';
 import ForgotPassComponent from '../pages/Auth/ForgotPassComponent';
+import { useUser } from '@clerk/clerk-expo';
+import ProfileComponent from '../pages/Profile/ProfileComponent';
 
 const HIDDEN_ROUTES: any[] = [];
 
@@ -154,60 +156,66 @@ const SchedsStackScreen = React.memo(({ navigation }: any) => (
 ));
 
 const AuthStackScreen = React.memo(({ navigation }: any) => (
-    <AuthStack.Navigator screenOptions={{
-        //headerShown: false,
-    }}>
+    <AuthStack.Navigator
+        screenOptions={{
+            // headerShown: false,
+        }}
+    >
         <AuthStack.Screen
             name="LoginScreen"
             options={{
                 headerShown: false,
-            }}>
-            {(props) => (
-                <LoginComponent {...props} />
-            )}
+            }}
+        >
+            {(props) => <LoginComponent {...props} />}
         </AuthStack.Screen>
-        <AuthStack.Screen name="RegisterScreen" options={{
-            headerTitle: 'Cadastre-se',
-            headerShown: true,
-            headerTitleStyle: {
-                fontFamily: 'Outfit-SemiBold',
-                fontSize: 20,
-            },
-            headerTitleAlign: 'left',
-            headerStyle: {
-                backgroundColor: '#fff',
-            },
-            headerTintColor: '#374151',
-        }}>
-            {(props) => (
-                <RegisterComponent {...props} />
-            )}
+        <AuthStack.Screen
+            name="RegisterScreen"
+            options={{
+                headerTitle: 'Cadastre-se',
+                headerShown: true,
+                headerTitleStyle: {
+                    fontFamily: 'Outfit-SemiBold',
+                    fontSize: 20,
+                },
+                headerTitleAlign: 'left',
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#374151',
+            }}
+        >
+            {(props) => <RegisterComponent {...props} />}
         </AuthStack.Screen>
-        <AuthStack.Screen name="ForgotScreen" options={{
-            headerTitle: 'Redefinir Senha',
-            headerShown: true,
-            headerTitleStyle: {
-                fontFamily: 'Outfit-SemiBold',
-                fontSize: 20,
-            },
-            headerTitleAlign: 'left',
-            headerStyle: {
-                backgroundColor: '#fff',
-            },
-            headerTintColor: '#374151',
-        }}>
-            {(props) => (
-                <ForgotPassComponent {...props} />
-            )}
+        <AuthStack.Screen
+            name="ForgotScreen"
+            options={{
+                headerTitle: 'Redefinir Senha',
+                headerShown: true,
+                headerTitleStyle: {
+                    fontFamily: 'Outfit-SemiBold',
+                    fontSize: 20,
+                },
+                headerTitleAlign: 'left',
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#374151',
+            }}
+        >
+            {(props) => <ForgotPassComponent {...props} />}
         </AuthStack.Screen>
-    </AuthStack.Navigator >
+    </AuthStack.Navigator>
 ));
+
 
 
 export function MainTabs() {
     const navigation = useNavigation();
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);
+    const { isLoaded, isSignedIn, user } = useUser();
+
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -223,6 +231,8 @@ export function MainTabs() {
 
             console.log("AppState", appState.current); //ou appStateVisible
         });
+
+        console.log(isSignedIn)
 
         return () => {
             subscription.remove();
@@ -279,48 +289,76 @@ export function MainTabs() {
                     tabBarHideOnKeyboard: true,
                     headerShadowVisible: false,
                 })}>
-                <Tab.Screen
-                    name="Home"
-                    component={HomeComponent}
-                    options={{
-                        // title: "Início", //voce pode usar title ou tabBarLabel
-                        tabBarLabel: 'Início',
+                {!isSignedIn || !user ? (
+                    <Tab.Screen name="Auth" options={{
                         headerShown: false,
+                        tabBarItemStyle: { display: "none" },
+                        tabBarStyle: {
+                            display: "none"
+                        },
                         tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="home-circle-outline" color={color} size={26} />
-                        )
-                    }}
-                />
-                <Tab.Screen name="Pesquisar" options={{
-                    headerShown: false,
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="magnify" color={color} size={26} />
-                    ),
-                }}>
-                    {() => <CategoryStackScreen />}
-                </Tab.Screen>
-                <Tab.Screen name="Scheds" options={{
-                    headerShown: false,
-                    //tabBarItemStyle: { display: "none" },
-                    // tabBarStyle: {
-                    //     display: "none"
-                    // },
-                    title: "Agendamentos",
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="calendar-check-outline" color={color} size={26} />
-                    ),
-                }}>
-                    {() => <SchedsStackScreen navigation={navigation} />}
-                </Tab.Screen>
-                <Tab.Screen name="Auth" options={{
-                    headerShown: false,
-                    title: "Login",
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="account-circle-outline" color={color} size={26} />
-                    ),
-                }}>
-                    {() => <AuthStackScreen />}
-                </Tab.Screen>
+                            <MaterialCommunityIcons name="account-circle-outline" color={color} size={26} />
+                        ),
+                    }}>
+                        {() => <AuthStackScreen user={user} isSignedIn={isSignedIn} />}
+                    </Tab.Screen>
+                ) : (
+                    <>
+                        <Tab.Screen
+                            name="Home"
+                            component={HomeComponent}
+                            options={{
+                                // title: "Início", //voce pode usar title ou tabBarLabel
+                                tabBarLabel: 'Início',
+                                headerShown: false,
+                                tabBarIcon: ({ color, size }) => (
+                                    <MaterialCommunityIcons name="home-circle-outline" color={color} size={26} />
+                                )
+                            }}
+                        />
+                        <Tab.Screen name="Pesquisar" options={{
+                            headerShown: false,
+                            tabBarIcon: ({ color, size }) => (
+                                <MaterialCommunityIcons name="magnify" color={color} size={26} />
+                            ),
+                        }}>
+                            {() => <CategoryStackScreen />}
+                        </Tab.Screen>
+                        <Tab.Screen name="Scheds" options={{
+                            headerShown: false,
+                            //tabBarItemStyle: { display: "none" },
+                            // tabBarStyle: {
+                            //     display: "none"
+                            // },
+                            title: "Agendamentos",
+                            tabBarIcon: ({ color, size }) => (
+                                <MaterialCommunityIcons name="calendar-check-outline" color={color} size={26} />
+                            ),
+                        }}>
+                            {() => <SchedsStackScreen navigation={navigation} />}
+                        </Tab.Screen>
+                        <Tab.Screen
+                            name="Profile"
+                            component={ProfileComponent}
+                            options={{
+                                // title: "Início", //voce pode usar title ou tabBarLabel
+                                tabBarLabel: user.firstName ?? 'Perfil',
+                                headerShown: false,
+                                tabBarIcon: ({ color, size }) => (
+                                    // <MaterialCommunityIcons name="face-man-outline" color={color} size={26} />
+                                    <Image
+                                        source={{
+                                            uri: user?.imageUrl,
+                                        }}
+                                        height={26}
+                                        width={26}
+                                        style={{borderRadius: 50}}
+                                    />
+                                )
+                            }}
+                        />
+                    </>
+                )}
             </Tab.Navigator>
         </View>
     );

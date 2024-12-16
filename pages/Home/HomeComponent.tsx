@@ -3,14 +3,15 @@ import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useUser } from "@clerk/clerk-expo";
 
-const DoctorCard = ({ navigation }: any) => {
+const DoctorCard = ({ navigation, username }: any) => {
     return (
         <View className="bg-white p-4">
             {/* Saudações e ícone de notificação */}
             <View className="flex-row justify-between items-center mb-10">
                 <View>
-                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, Philip</Text>
+                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, {username}</Text>
                     <Text className="text-gray-500 text-base font-OutfitMedium">Como você está se sentindo hoje?</Text>
                 </View>
                 <TouchableOpacity className="bg-gray-100 rounded-full p-2 self-start">
@@ -105,10 +106,11 @@ const FindNextStores = ({ navigation }: any) => {
 };
 
 export default function HomeComponent({ navigation }: any) {
+    const { user } = useUser();
     return (
         <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
-            <DoctorCard navigation={navigation} />
+            <DoctorCard username={user?.firstName} navigation={navigation} />
             {/* <FindNextStores navigation={navigation} /> */}
             <NextSched navigation={navigation} />
         </View>
