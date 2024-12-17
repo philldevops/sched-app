@@ -4,13 +4,14 @@ import Constants from "expo-constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
+import { capitalize } from "../../routes/routes";
 
 const DoctorCard = ({ navigation, username }: any) => {
     return (
         <View className="bg-white p-4">
             <View className="flex-row justify-between items-center mb-10">
                 <View>
-                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, {username ?? 'Usuário'}</Text>
+                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, {capitalize(username as string) ?? 'Usuário'}</Text>
                     <Text className="text-gray-500 text-base font-OutfitMedium">Como você está se sentindo hoje?</Text>
                 </View>
                 <TouchableOpacity className="bg-gray-100 rounded-full p-2 self-start">

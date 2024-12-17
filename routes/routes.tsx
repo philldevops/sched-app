@@ -209,6 +209,13 @@ const AuthStackScreen = React.memo(({ navigation }: any) => (
 ));
 
 
+// Função utilitária para capitalizar a primeira letra
+export const capitalize = (str: string) => {
+    if (!str) return ''; // Tratamento para strings vazias
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+
 
 export function MainTabs() {
     const navigation = useNavigation();
@@ -340,7 +347,7 @@ export function MainTabs() {
                             component={ProfileComponent}
                             options={{
                                 // title: "Início", //voce pode usar title ou tabBarLabel
-                                tabBarLabel: user.firstName ?? 'Perfil',
+                                tabBarLabel: capitalize(user?.firstName as string) ?? 'Perfil',
                                 headerShown: false,
                                 tabBarIcon: ({ color, size }) => (
                                     // <MaterialCommunityIcons name="face-man-outline" color={color} size={26} />
@@ -350,7 +357,7 @@ export function MainTabs() {
                                         }}
                                         height={26}
                                         width={26}
-                                        style={{borderRadius: 50}}
+                                        style={{ borderRadius: 50 }}
                                     />
                                 )
                             }}

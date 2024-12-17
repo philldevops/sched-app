@@ -3,10 +3,13 @@ import { useAuth, useUser } from '@clerk/clerk-expo'
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from 'expo-image-picker'
+import { capitalize } from "../../routes/routes";
 
 export default function ProfileComponent({ route, navigation }: any) {
     const { signOut } = useAuth();
     const { user } = useUser();
+    const metaData: any = user?.publicMetadata as {};
+
 
     async function onPickImage() {
         try {
@@ -37,7 +40,7 @@ export default function ProfileComponent({ route, navigation }: any) {
         <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
             <ScrollView>
-                <View className="border-b border-gray-300 flex-row gap-3 p-3 justify-start items-center">
+                <View className="border-b border-gray-300 flex-row gap-5 p-3 justify-start items-center">
                     <TouchableOpacity onPress={onPickImage}>
                         <Image
                             source={{
@@ -49,8 +52,10 @@ export default function ProfileComponent({ route, navigation }: any) {
                         />
                     </TouchableOpacity>
                     <View className="self-center top-1">
-                        <Text className="font-OutfitBold text-lg">{user?.fullName ?? 'Usuário'}</Text>
+                        <Text className="font-OutfitBold text-lg">{capitalize(user?.fullName as string) ?? 'Usuário'}</Text>
                         <Text className="font-OutfitMedium top-[-5] text-lg">{user?.emailAddresses.map((e) => e.emailAddress)}</Text>
+                        <Text className="font-OutfitRegular top-[-5] text-base">Contato: {metaData?.phone}</Text>
+                        <Text className="font-OutfitRegular top-[-5] text-base">Sexo: {metaData?.gender}</Text>
                     </View>
                 </View>
             </ScrollView>
