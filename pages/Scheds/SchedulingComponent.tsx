@@ -146,9 +146,11 @@ export default function SchedulingComponent({ route, navigation }: any) {
             }}>
                 <StatusBar style="auto" />
 
-                <Text className="font-OutfitMedium text-2xl text-blue-700 mb-4">{slug}</Text>
+                {/* <Text className="font-OutfitMedium text-2xl text-blue-700 mb-4">{slug}</Text> */}
 
-                <Text className="font-OutfitMedium text-lg text-gray-700 mb-2">1. Selecione uma especialidade:</Text>
+                <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
+                    1. Selecione uma especialidade:
+                </Text>
                 <DropDownPicker
                     open={openDropdownSpeciality}
                     setOpen={setOpenDropdownSpeciality}
@@ -168,7 +170,9 @@ export default function SchedulingComponent({ route, navigation }: any) {
 
                 {doctorOptions.length > 0 && (
                     <>
-                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-3">2. Selecione um médico:</Text>
+                        <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
+                            2. Selecione um(a) médico(a):
+                        </Text>
                         <DropDownPicker
                             open={openDropdownDoctor}
                             setOpen={setOpenDropdownDoctor}
@@ -194,7 +198,9 @@ export default function SchedulingComponent({ route, navigation }: any) {
 
                 {availableDates.length > 0 && (
                     <>
-                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-6">3. Selecione uma data:</Text>
+                        <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
+                            3. Selecione uma data:
+                        </Text>
                         <Calendar
                             minDate={availableDates[0]}
                             maxDate={availableDates[availableDates.length - 1]}
@@ -221,7 +227,9 @@ export default function SchedulingComponent({ route, navigation }: any) {
 
                 {timeSlots.length > 0 && (
                     <>
-                        <Text className="font-OutfitMedium text-lg text-gray-700 mb-2 mt-4">4. Selecione um horário:</Text>
+                        <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
+                            4. Selecione um horário:
+                        </Text>
                         <View className="flex-row flex-wrap gap-2">
                             {timeSlots.map((time: string) => (
                                 <TouchableOpacity
@@ -240,64 +248,66 @@ export default function SchedulingComponent({ route, navigation }: any) {
                     </>
                 )}
 
-                <TouchableOpacity
-                    focusable={false}
-                    className={`flex-row items-center justify-between px-4 py-3 rounded-lg mt-4 ${selectedTime ? "bg-blue-500" : "bg-gray-200"}`}
-                    onPress={() => {
-                        if (!selectedSpeciality || !selectedDoctor || !selectedDate || !selectedTime) {
-                            Alert.alert("Erro", "Por favor, preencha todos os campos antes de confirmar.");
-                            return;
-                        }
+                {selectedTime && (
+                    <TouchableOpacity
+                        focusable={false}
+                        className={`flex-row items-center justify-between px-4 py-3 rounded-lg mt-4 ${selectedTime ? "bg-blue-500" : "bg-gray-200"}`}
+                        onPress={() => {
+                            if (!selectedSpeciality || !selectedDoctor || !selectedDate || !selectedTime) {
+                                Alert.alert("Erro", "Por favor, preencha todos os campos antes de confirmar.");
+                                return;
+                            }
 
-                        const formattedDate = new Date(selectedDate).toLocaleDateString('pt-BR');
+                            const formattedDate = new Date(selectedDate).toLocaleDateString('pt-BR');
 
-                        Alert.alert(
-                            "Confirmação de Agendamento",
-                            `Você confirma o agendamento para:\n\nEspecialidade: ${selectedSpeciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
-                            [
-                                { text: "Não", style: "cancel" },
-                                {
-                                    text: "Sim",
-                                    onPress: () => {
-                                        Alert.alert("Sucesso", "Agendamento realizado!");
+                            Alert.alert(
+                                "Confirmação de Agendamento",
+                                `Você confirma o agendamento para:\n\nEspecialidade: ${selectedSpeciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
+                                [
+                                    { text: "Não", style: "cancel" },
+                                    {
+                                        text: "Sim",
+                                        onPress: () => {
+                                            Alert.alert("Sucesso", "Agendamento realizado!");
 
-                                        // Redefine o stack atual e navega para ScheduleDetails
-                                        navigation.dispatch(
-                                            CommonActions.reset({
-                                                index: 0, // Define a tela inicial como SchedsScreen
-                                                routes: [
-                                                    { name: "Scheds" }, // Scheds é a tab associada ao SchedsStack
-                                                ],
-                                            })
-                                        );
+                                            // Redefine o stack atual e navega para ScheduleDetails
+                                            navigation.dispatch(
+                                                CommonActions.reset({
+                                                    index: 0, // Define a tela inicial como SchedsScreen
+                                                    routes: [
+                                                        { name: "Scheds" }, // Scheds é a tab associada ao SchedsStack
+                                                    ],
+                                                })
+                                            );
 
-                                        // Após resetar o stack, navega para ScheduleDetails
-                                        setTimeout(() => {
-                                            navigation.navigate('Scheds', {
-                                                screen: 'ScheduleDetails',
-                                                params: {},
-                                            });
+                                            // Após resetar o stack, navega para ScheduleDetails
+                                            setTimeout(() => {
+                                                navigation.navigate('Scheds', {
+                                                    screen: 'ScheduleDetails',
+                                                    params: {},
+                                                });
 
-                                        }, 500); // Timeout curto para garantir o reset
+                                            }, 500); // Timeout curto para garantir o reset
+                                        },
                                     },
-                                },
-                            ]
-                        )
-                    }}>
-                    <View className="flex-1">
-                        <Text className="text-white text-base font-OutfitBold">
-                            Confirmar Agendamento
-                        </Text>
-                        <Text className="text-white font-OutfitRegular text-sm mt-1">
-                            Clique para ver mais detalhes
-                        </Text>
-                    </View>
-                    <MaterialCommunityIcons
-                        name="chevron-right"
-                        size={28}
-                        color="#fff"
-                    />
-                </TouchableOpacity>
+                                ]
+                            )
+                        }}>
+                        <View className="flex-1">
+                            <Text className="text-white text-base font-OutfitBold">
+                                Confirmar Agendamento
+                            </Text>
+                            <Text className="text-white font-OutfitRegular text-sm mt-1">
+                                Clique para ver mais detalhes
+                            </Text>
+                        </View>
+                        <MaterialCommunityIcons
+                            name="chevron-right"
+                            size={28}
+                            color="#fff"
+                        />
+                    </TouchableOpacity>
+                )}
             </ScrollView>
         </View>
     )

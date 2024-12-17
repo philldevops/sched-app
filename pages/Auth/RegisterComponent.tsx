@@ -1,19 +1,22 @@
 import * as React from 'react'
 import { Text, TextInput, Button, View, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
+import { useState } from 'react'
 
 export default function RegisterComponent({ route, navigation }: any) {
     const { isLoaded, signUp, setActive } = useSignUp()
-    const [firstName, setFirstName] = React.useState('')
-    const [lastName, setLastName] = React.useState('')
-    const [emailAddress, setEmailAddress] = React.useState('')
-    const [password, setPassword] = React.useState('')
-    const [pendingVerification, setPendingVerification] = React.useState(false)
-    const [code, setCode] = React.useState('')
-    const email = route?.params?.email || "exemplo@email.com";
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+    const [emailAddress, setEmailAddress] = useState('')
+    const [phone, setPhone] = useState('')
+    const [password, setPassword] = useState('')
+    const [pendingVerification, setPendingVerification] = useState(false)
+    const [code, setCode] = useState('')
 
     // Handle submission of sign-up form
     const onSignUpPress = async () => {
+
+        if (!firstName && !lastName && !phone && !emailAddress && !password) return
         if (!isLoaded) return
 
         // Start sign-up process using email and password provided
@@ -22,7 +25,10 @@ export default function RegisterComponent({ route, navigation }: any) {
                 emailAddress,
                 password,
                 firstName,
-                lastName
+                lastName,
+                unsafeMetadata: {
+                    phoneNumber: phone
+                }
             })
 
             // Send user an email with verification code
@@ -93,9 +99,9 @@ export default function RegisterComponent({ route, navigation }: any) {
 
     return (
         <ScrollView className="flex-1 bg-white px-6 py-8">
-            <Text className="text-3xl font-OutfitMedium text-gray-900 mb-6">Crie sua conta</Text>
+            {/* <Text className="text-3xl font-OutfitMedium text-gray-900 mb-6">Crie sua conta</Text> */}
             <Text className="text-lg font-OutfitMedium text-gray-600 mb-8">
-                Realize seu cadastro para poder realizar agendamentos.
+                Faça seu cadastro para poder realizar agendamentos.
             </Text>
             <View className="space-y-4">
                 <TextInput
@@ -115,6 +121,16 @@ export default function RegisterComponent({ route, navigation }: any) {
                     placeholderTextColor="#666666"
                     onChangeText={(lastName) => setLastName(lastName)}
                 />
+
+                <TextInput
+                    placeholder="Telefone"
+                    keyboardType="number-pad"
+                    className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    value={phone}
+                    placeholderTextColor="#666666"
+                    onChangeText={(phone) => setPhone(phone)}
+                />
+
                 <TextInput
                     placeholder="E-mail"
                     keyboardType="email-address"

@@ -20,6 +20,7 @@ export default function LoginComponent({ route, navigation }: any) {
 
     // Handle the submission of the sign-in form
     const onSignInEmailPress = React.useCallback(async () => {
+        if (!emailAddress && !password) return
         if (!isLoaded) return
 
         // Start the sign-in process using the email and password provided
@@ -40,13 +41,18 @@ export default function LoginComponent({ route, navigation }: any) {
                 console.error(JSON.stringify(signInAttempt, null, 2))
             }
             setIsEmailLoading(false)
-        } catch (err:any) {
+        } catch (err: any) {
             // See https://clerk.com/docs/custom-flows/error-handling
             // for more info on error handling
             const error_type: any = err.errors.map((ex: any) => ex.code)
             if (error_type[0] === "strategy_for_user_invalid") {
                 Alert.alert('Ops!', 'Usuário não encontrado. Parece que você não usou este método de autenticação para se cadastrar anteriormente.')
             }
+
+            if (error_type[0] === "form_password_incorrect") {
+                Alert.alert('Atenção', 'Senha incorreta. Tente novamente, ou use outro método de login.')
+            }
+
             console.error(JSON.stringify(err, null, 2))
             setIsEmailLoading(false)
         }
@@ -100,7 +106,7 @@ export default function LoginComponent({ route, navigation }: any) {
                 <Text className="text-right text-blue-500 font-OutfitSemiBold">Esqueceu sua senha?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="bg-blue-500 mt-6 rounded-lg py-3" onPress={onSignInEmailPress}>
+            <TouchableOpacity className="bg-blue-500 mt-6 rounded-lg py-2" onPress={onSignInEmailPress}>
                 {isEmailLoading ? (<ActivityIndicator size={'small'} color={'#fff'} />) : (
                     <Text className="text-center text-white font-OutfitSemiBold text-lg">Entrar</Text>
                 )}
@@ -121,11 +127,11 @@ export default function LoginComponent({ route, navigation }: any) {
                 <View className="flex-1 h-px bg-gray-300"></View>
             </View>
 
-            <TouchableOpacity onPress={SignIn} className="border border-gray-300 mt-6 rounded-lg py-3 flex-row items-center justify-center space-x-2">
-                {isLoading ? (<ActivityIndicator size={'small'} color={'#333'} />) : (
+            <TouchableOpacity onPress={SignIn} className="border border-orange-500 mt-6 rounded-lg py-3 flex-row items-center justify-center space-x-2">
+                {isLoading ? (<ActivityIndicator size={'small'} color={'#f97316'} />) : (
                     <>
-                        <MaterialCommunityIcons size={28} name='google-plus' />
-                        <Text className="text-gray-900 font-OutfitSemiBold">Entrar com Google</Text>
+                        <MaterialCommunityIcons size={22} name='google-plus' color={"#f97316"} />
+                        <Text className="text-orange-500 font-OutfitSemiBold">Entrar com Google</Text>
                     </>
                 )}
             </TouchableOpacity>

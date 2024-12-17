@@ -3,12 +3,12 @@ import { useAuth, useUser } from '@clerk/clerk-expo'
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from 'expo-image-picker'
-import { capitalize } from "../../routes/routes";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function ProfileComponent({ route, navigation }: any) {
     const { signOut } = useAuth();
     const { user } = useUser();
-    const metaData: any = user?.publicMetadata as {};
+    const metaData: any = user?.unsafeMetadata as {};
 
 
     async function onPickImage() {
@@ -37,10 +37,10 @@ export default function ProfileComponent({ route, navigation }: any) {
     }
 
     return (
-        <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
+        <View className="flex-1 bg-white px-6" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
             <ScrollView>
-                <View className="border-b border-gray-300 flex-row gap-5 p-3 justify-start items-center">
+                <View className="border-b border-gray-300 flex-row gap-5 p-3 px-0 justify-start items-center">
                     <TouchableOpacity onPress={onPickImage}>
                         <Image
                             source={{
@@ -52,15 +52,32 @@ export default function ProfileComponent({ route, navigation }: any) {
                         />
                     </TouchableOpacity>
                     <View className="self-center top-1">
-                        <Text className="font-OutfitBold text-lg">{capitalize(user?.fullName as string) ?? 'Usuário'}</Text>
-                        <Text className="font-OutfitMedium top-[-5] text-lg">{user?.emailAddresses.map((e) => e.emailAddress)}</Text>
-                        <Text className="font-OutfitRegular top-[-5] text-base">Contato: {metaData?.phone}</Text>
-                        <Text className="font-OutfitRegular top-[-5] text-base">Sexo: {metaData?.gender}</Text>
+                        <Text className="font-OutfitBold text-lg capitalize">{user?.fullName ?? 'Usuário'}</Text>
+                        <Text className="font-OutfitMedium top-[-5] text-base">{user?.emailAddresses.map((e) => e.emailAddress)}</Text>
+                        {metaData?.phoneNumber && (<Text className="font-OutfitRegular top-[-5] text-base">{metaData?.phoneNumber}</Text>)}
                     </View>
                 </View>
             </ScrollView>
-            <TouchableOpacity className="p-4 bg-blue-500" onPress={() => signOut()}>
-                <Text className="font-OutfitMedium text-lg text-center text-white">Sair da Conta</Text>
+            <TouchableOpacity
+                focusable={false}
+                onPress={() =>
+                    signOut()
+                }
+                className="flex-row items-center justify-between px-4 py-2 bg-orange-100 border border-orange-200 rounded-lg my-6"
+            >
+                <View className="flex-1">
+                    <Text className="text-gray-600 text-base font-OutfitBold">
+                        Sair da Conta
+                    </Text>
+                    <Text className="text-gray-600 font-OutfitRegular text-sm mt-1">
+                        Faz o logout e retorna à tela de login
+                    </Text>
+                </View>
+                <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={28}
+                    color="orange"
+                />
             </TouchableOpacity>
         </View>
     )
