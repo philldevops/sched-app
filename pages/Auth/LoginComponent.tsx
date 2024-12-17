@@ -4,15 +4,53 @@ import Constants from "expo-constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from "expo-web-browser"
-import { useAuth, useOAuth, useUser } from '@clerk/clerk-expo';
+import { useOAuth, useUser, useSignIn } from '@clerk/clerk-expo';
 
 WebBrowser.maybeCompleteAuthSession()
 
 export default function LoginComponent({ route, navigation }: any) {
     const [isLoading, setIsLoading] = useState(false);
+    const [isEmailLoading, setIsEmailLoading] = useState(false);
     const googleOAuth = useOAuth({ strategy: "oauth_google" });
-    const { isLoaded, userId, sessionId } = useAuth()
+    const { signIn, setActive, isLoaded } = useSignIn()
     const { user } = useUser();
+
+    const [emailAddress, setEmailAddress] = useState('')
+    const [password, setPassword] = useState('')
+
+    // Handle the submission of the sign-in form
+    const onSignInEmailPress = React.useCallback(async () => {
+        if (!isLoaded) return
+
+        // Start the sign-in process using the email and password provided
+        try {
+            setIsEmailLoading(true);
+            const signInAttempt = await signIn.create({
+                identifier: emailAddress,
+                password,
+            })
+
+            // If sign-in process is complete, set the created session as active
+            // and redirect the user
+            if (signInAttempt.status === 'complete') {
+                await setActive({ session: signInAttempt.createdSessionId })
+            } else {
+                // If the status isn't complete, check why. User might need to
+                // complete further steps.
+                console.error(JSON.stringify(signInAttempt, null, 2))
+            }
+            setIsEmailLoading(false)
+        } catch (err:any) {
+            // See https://clerk.com/docs/custom-flows/error-handling
+            // for more info on error handling
+            const error_type: any = err.errors.map((ex: any) => ex.code)
+            if (error_type[0] === "strategy_for_user_invalid") {
+                Alert.alert('Ops!', 'Usuário não encontrado. Parece que você não usou este método de autenticação para se cadastrar anteriormente.')
+            }
+            console.error(JSON.stringify(err, null, 2))
+            setIsEmailLoading(false)
+        }
+    }, [isLoaded, emailAddress, password])
 
     async function SignIn() {
         try {
@@ -24,14 +62,12 @@ export default function LoginComponent({ route, navigation }: any) {
                 if (oAuthFlow.setActive) {
                     await oAuthFlow.setActive({ session: oAuthFlow.createdSessionId })
                 }
-                Alert.alert('Deu certo!')
                 setIsLoading(false)
             } else {
                 setIsLoading(false)
             }
         } catch (error) {
-            console.log(error)
-            Alert.alert(JSON.stringify(error, null, 2))
+            console.log(JSON.stringify(error, null, 2))
             setIsLoading(false)
         }
     }
@@ -47,11 +83,16 @@ export default function LoginComponent({ route, navigation }: any) {
                     placeholder="E-mail"
                     keyboardType="email-address"
                     className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    autoCapitalize="none"
+                    value={emailAddress}
+                    onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
                 />
                 <TextInput
                     placeholder="Senha"
                     secureTextEntry
                     className="bg-gray-50 border-l-4 border-blue-500 font-OutfitMedium rounded-lg px-4 py-3 text-gray-900"
+                    value={password}
+                    onChangeText={(password) => setPassword(password)}
                 />
             </View>
 
@@ -59,11 +100,15 @@ export default function LoginComponent({ route, navigation }: any) {
                 <Text className="text-right text-blue-500 font-OutfitSemiBold">Esqueceu sua senha?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="bg-blue-500 mt-6 rounded-lg py-3">
-                <Text className="text-center text-white font-OutfitSemiBold text-lg">Entrar</Text>
+            <TouchableOpacity className="bg-blue-500 mt-6 rounded-lg py-3" onPress={onSignInEmailPress}>
+                {isEmailLoading ? (<ActivityIndicator size={'small'} color={'#fff'} />) : (
+                    <Text className="text-center text-white font-OutfitSemiBold text-lg">Entrar</Text>
+                )}
             </TouchableOpacity>
 
-            <TouchableOpacity className="mt-4" onPress={() => navigation.navigate('RegisterScreen')}>
+            <TouchableOpacity className="mt-4" onPress={() => navigation.navigate('RegisterScreen', {
+                email: emailAddress
+            })}>
                 <Text className="text-center font-OutfitRegular text-gray-500">
                     Não possui uma conta?{' '}
                     <Text className="text-blue-500 font-OutfitSemiBold">Cadastre-se</Text>
@@ -84,15 +129,6 @@ export default function LoginComponent({ route, navigation }: any) {
                     </>
                 )}
             </TouchableOpacity>
-
-            {userId && sessionId && (
-                <View className='flex-1'>
-                    <Text>
-                        Hello, {userId} your current active session is {sessionId}
-                    </Text>
-                    <Text>First name: {user?.firstName}</Text>
-                </View>
-            )}
         </View>
     );
 };

@@ -232,8 +232,6 @@ export function MainTabs() {
             console.log("AppState", appState.current); //ou appStateVisible
         });
 
-        console.log(isSignedIn)
-
         return () => {
             subscription.remove();
         };

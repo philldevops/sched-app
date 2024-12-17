@@ -1,17 +1,16 @@
-import { Text, TouchableOpacity, View, Image } from "react-native";
+import { Text, TouchableOpacity, View, Image, ActivityIndicator } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUser } from "@clerk/clerk-expo";
+import { useEffect, useState } from "react";
 
 const DoctorCard = ({ navigation, username }: any) => {
     return (
         <View className="bg-white p-4">
-            {/* Saudações e ícone de notificação */}
             <View className="flex-row justify-between items-center mb-10">
                 <View>
-                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, {username}</Text>
+                    <Text className="text-2xl font-OutfitBold text-gray-900">Olá, {username ?? 'Usuário'}</Text>
                     <Text className="text-gray-500 text-base font-OutfitMedium">Como você está se sentindo hoje?</Text>
                 </View>
                 <TouchableOpacity className="bg-gray-100 rounded-full p-2 self-start">
@@ -34,9 +33,6 @@ const DoctorCard = ({ navigation, username }: any) => {
                 </View>
                 <Image
                     source={require('../../assets/office.png')}
-                    // source={{
-                    //     uri: 'https://img.freepik.com/free-photo/smiling-young-female-doctor-holding-folder-hospital-office_1303-21268.jpg',
-                    // }}
                     className="w-40 h-52 ml-2 absolute right-2 bottom-0"
                     resizeMode="cover"
                 />
@@ -85,34 +81,40 @@ const NextSched = ({ navigation }: any) => {
     )
 }
 
-const FindNextStores = ({ navigation }: any) => {
-    return (
-        <View className="bg-indigo-500 rounded-2xl p-4 flex-row items-center relative m-4">
-            <View className="flex-1 max-w-[70%]">
-                <Text className="text-white text-start text-lg font-OutfitMedium mb-3">
-                    Encontre clínicas próximas a você.
-                </Text>
-                <TouchableOpacity className="bg-white rounded-full py-2 px-4 self-start" onPress={() => null}>
-                    <Text className="text-blue-500 font-OutfitMedium">Procurar</Text>
-                </TouchableOpacity>
-            </View>
-            <Image
-                source={require('../../assets/male.png')}
-                className="w-40 h-52 ml-2 absolute right-5 bottom-0"
-                resizeMode="cover"
-            />
-        </View>
-    );
-};
-
 export default function HomeComponent({ navigation }: any) {
-    const { user } = useUser();
+    const { user, isSignedIn } = useUser();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const handleUser = async () => {
+            if (isSignedIn) {
+                setIsLoading(false)
+            } else {
+                setIsLoading(true)
+            }
+        }
+
+        handleUser();
+
+        return () => {
+            setIsLoading(false)
+        }
+    }, [])
+    ActivityIndicator
+
     return (
         <View className="flex-1 bg-white" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
-            <DoctorCard username={user?.firstName} navigation={navigation} />
-            {/* <FindNextStores navigation={navigation} /> */}
-            <NextSched navigation={navigation} />
-        </View>
+            {isLoading ? (
+                <View className="flex-1 justify-center items-center text-center">
+                    <ActivityIndicator size={26} color={"#3b82f6"} />
+                </View>
+            ) : (
+                <>
+                    <DoctorCard username={user?.firstName} navigation={navigation} />
+                    <NextSched navigation={navigation} />
+                </>
+            )}
+        </View >
     );
 }
