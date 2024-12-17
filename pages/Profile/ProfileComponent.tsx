@@ -40,7 +40,7 @@ export default function ProfileComponent({ route, navigation }: any) {
         <View className="flex-1 bg-white px-6" style={{ paddingTop: Constants.statusBarHeight }}>
             <StatusBar style="auto" />
             <ScrollView>
-                <View className="border-b border-gray-300 flex-row gap-5 p-3 px-0 justify-start items-center">
+                <View className="border-b border-gray-100 flex-row gap-5 p-3 px-0 justify-start items-center">
                     <TouchableOpacity onPress={onPickImage}>
                         <Image
                             source={{
@@ -51,9 +51,9 @@ export default function ProfileComponent({ route, navigation }: any) {
                             className="rounded-full"
                         />
                     </TouchableOpacity>
-                    <View className="self-center top-1">
-                        <Text className="font-OutfitBold text-lg capitalize">{user?.fullName ?? 'Usuário'}</Text>
-                        <Text className="font-OutfitMedium top-[-5] text-base">{user?.emailAddresses.map((e) => e.emailAddress)}</Text>
+                    <View className="self-center">
+                        <Text className="font-OutfitSemiBold text-lg capitalize">{user?.fullName ?? 'Usuário'}</Text>
+                        <Text className="font-OutfitRegular top-[-5] text-base">{user?.emailAddresses.map((e) => e.emailAddress)}</Text>
                         {metaData?.phoneNumber && (<Text className="font-OutfitRegular top-[-5] text-base">{metaData?.phoneNumber}</Text>)}
                     </View>
                 </View>

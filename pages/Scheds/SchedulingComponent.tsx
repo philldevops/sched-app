@@ -161,7 +161,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                         value: option.speciality,
                     }))}
                     placeholder="Selecione uma especialidade"
-                    style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }}
+                    style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, elevation: 5, shadowColor: '#d1d5db' }}
                     dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }} //f97316 orange
                     textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
                     zIndex={3000}
@@ -180,7 +180,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                             setValue={setSelectedDoctor}
                             items={doctorOptions}
                             placeholder="Selecione um médico"
-                            style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }}
+                            style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, elevation: 5, shadowColor: '#d1d5db' }}
                             dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }} //f97316 orange
                             textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
                             zIndex={2000}
@@ -214,6 +214,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                                 arrowColor: "#1D4ED8",
                                 textDisabledColor: "rgba(0,0,0,0.1)",
                             }}
+                            //elevation: 5, shadowColor: '#d1d5db'
                             style={{
                                 borderRadius: 20,
                                 height: 325,

@@ -23,7 +23,8 @@ export default function SearchResultComponent({ route, navigation }: any) {
                                     },
                                 })
                             }
-                            className="flex-row items-center justify-between px-4 py-3 bg-white mb-2 border-l-4 border-orange-500 rounded-xl"
+                            className="bg-[#fff] shadow-gray-300 border-l-4 border-orange-500 rounded-xl flex-1 mb-2 flex-row h-[70px] justify-between items-center px-4"
+                            style={{ elevation: 5 }}
                         >
                             <View className="flex-1">
                                 <Text className="text-gray-800 text-base font-OutfitMedium">
