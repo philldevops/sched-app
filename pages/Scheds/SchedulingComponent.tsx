@@ -27,8 +27,8 @@ LocaleConfig.defaultLocale = "pt-br";
 export default function SchedulingComponent({ route, navigation }: any) {
     const scheduleOptions = route.params?.storeDetails?.scheduleOptions;
     const slug = route.params?.storeDetails?.slug;
-
-    const [selectedSpeciality, setSelectedSpeciality] = useState<string | null>(null);
+    const speciality = scheduleOptions[0]?.speciality; // Especialidade definida automaticamente
+    
     const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
     const [schedObservations, setSchedObservations] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -36,14 +36,13 @@ export default function SchedulingComponent({ route, navigation }: any) {
     const [timeSlots, setTimeSlots] = useState<string[]>([]);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [doctorOptions, setDoctorOptions] = useState<any[]>([]);
-    const [openDropdownSpeciality, setOpenDropdownSpeciality] = useState(false);
     const [openDropdownDoctor, setOpenDropdownDoctor] = useState(false);
 
-    // Atualiza os médicos disponíveis ao selecionar uma especialidade
+    // Atualiza os médicos disponíveis ao carregar a especialidade
     useEffect(() => {
-        if (selectedSpeciality) {
+        if (speciality) {
             const selectedOption = scheduleOptions.find(
-                (option: any) => option.speciality === selectedSpeciality
+                (option: any) => option.speciality === speciality
             );
 
             if (selectedOption) {
@@ -57,21 +56,14 @@ export default function SchedulingComponent({ route, navigation }: any) {
                 setSelectedTime(null); // Resetar o horário ao trocar de especialidade
                 setTimeSlots([]); // Limpar os horários ao trocar de especialidade
             }
-        } else {
-            setDoctorOptions([]);
-            setSelectedDoctor(null);
-            setAvailableDates([]);
-            setSelectedDate(null);
-            setSelectedTime(null);
-            setTimeSlots([]);
         }
-    }, [selectedSpeciality, scheduleOptions]);
+    }, [speciality, scheduleOptions]);
 
     // Atualiza as datas disponíveis ao selecionar um médico
     useEffect(() => {
         if (selectedDoctor) {
             const selectedOption = scheduleOptions.find(
-                (option: any) => option.speciality === selectedSpeciality
+                (option: any) => option.speciality === speciality
             );
 
             const doctor = selectedOption?.doctors.find(
@@ -81,9 +73,9 @@ export default function SchedulingComponent({ route, navigation }: any) {
             if (doctor) {
                 const newDates = doctor.availableSlots.map((slot: any) => slot.date);
                 setAvailableDates(newDates);
-                setSelectedDate(null); // Resetar a data ao trocar de médico
-                setSelectedTime(null); // Resetar o horário ao trocar de médico
-                setTimeSlots([]); // Limpar os horários ao trocar de médico
+                setSelectedDate(null);
+                setSelectedTime(null);
+                setTimeSlots([]);
                 setSchedObservations(doctor.schedObservations);
             }
         } else {
@@ -93,15 +85,13 @@ export default function SchedulingComponent({ route, navigation }: any) {
             setTimeSlots([]);
             setSchedObservations(null);
         }
-
-
     }, [selectedDoctor]);
 
     // Obtém os horários disponíveis para uma data
     const handleDateSelection = (date: string) => {
         setSelectedDate(date);
         const selectedOption = scheduleOptions.find(
-            (option: any) => option.speciality === selectedSpeciality
+            (option: any) => option.speciality === speciality
         );
 
         const doctor = selectedOption?.doctors.find(
@@ -146,32 +136,14 @@ export default function SchedulingComponent({ route, navigation }: any) {
             }}>
                 <StatusBar style="auto" />
 
-                {/* <Text className="font-OutfitMedium text-2xl text-blue-700 mb-4">{slug}</Text> */}
-
                 <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
-                    1. Selecione uma especialidade:
+                    Especialidade: {speciality}
                 </Text>
-                <DropDownPicker
-                    open={openDropdownSpeciality}
-                    setOpen={setOpenDropdownSpeciality}
-                    value={selectedSpeciality}
-                    setValue={setSelectedSpeciality}
-                    items={scheduleOptions.map((option: any) => ({
-                        label: option.speciality,
-                        value: option.speciality,
-                    }))}
-                    placeholder="Selecione uma especialidade"
-                    style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, elevation: 5, shadowColor: '#d1d5db' }}
-                    dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }} //f97316 orange
-                    textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
-                    zIndex={3000}
-                    zIndexInverse={1000}
-                />
 
                 {doctorOptions.length > 0 && (
                     <>
                         <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
-                            2. Selecione um(a) médico(a):
+                            1. Selecione um(a) médico(a):
                         </Text>
                         <DropDownPicker
                             open={openDropdownDoctor}
@@ -181,7 +153,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                             items={doctorOptions}
                             placeholder="Selecione um médico"
                             style={{ borderColor: "#3b82f6", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, elevation: 5, shadowColor: '#d1d5db' }}
-                            dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }} //f97316 orange
+                            dropDownContainerStyle={{ borderColor: "#f97316", borderLeftWidth: 4, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }}
                             textStyle={{ fontSize: 16, fontFamily: "Outfit-Medium", color: "#333" }}
                             zIndex={2000}
                             zIndexInverse={2000}
@@ -254,7 +226,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                         focusable={false}
                         className={`flex-row items-center justify-between px-4 py-3 rounded-lg mt-4 ${selectedTime ? "bg-blue-500" : "bg-gray-200"}`}
                         onPress={() => {
-                            if (!selectedSpeciality || !selectedDoctor || !selectedDate || !selectedTime) {
+                            if (!speciality || !selectedDoctor || !selectedDate || !selectedTime) {
                                 Alert.alert("Erro", "Por favor, preencha todos os campos antes de confirmar.");
                                 return;
                             }
@@ -263,7 +235,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
 
                             Alert.alert(
                                 "Confirmação de Agendamento",
-                                `Você confirma o agendamento para:\n\nEspecialidade: ${selectedSpeciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
+                                `Você confirma o agendamento para:\n\nEspecialidade: ${speciality}\nData: ${formattedDate}\nHorário: ${selectedTime}?`,
                                 [
                                     { text: "Não", style: "cancel" },
                                     {
@@ -309,7 +281,8 @@ export default function SchedulingComponent({ route, navigation }: any) {
                         />
                     </TouchableOpacity>
                 )}
-            </ScrollView>
+                </ScrollView>
         </View>
     )
 };
+

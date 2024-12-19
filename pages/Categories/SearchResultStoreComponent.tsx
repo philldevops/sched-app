@@ -10,7 +10,7 @@ export default function SearchResultStoreComponent({ route, navigation }: any) {
     //console.log(JSON.stringify(storeDetails, null, 2))
 
     return (
-        <View className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-white">
             <StatusBar style="dark" />
 
             {/* Cabeçalho */}
@@ -45,7 +45,7 @@ export default function SearchResultStoreComponent({ route, navigation }: any) {
                         </View>
 
                         {/* Especialidades */}
-                        {storeDetails?.scheduleOptions?.length > 0 && (
+                        {/* {storeDetails?.scheduleOptions?.length > 0 && (
                             <View className="bg-white p-3 px-6 space-y-0 pb-5">
                                 <Text className="text-base font-OutfitMedium text-gray-500">Especialidades</Text>
                                 <View className="flex-row flex-wrap gap-2 mt-1">
@@ -59,7 +59,7 @@ export default function SearchResultStoreComponent({ route, navigation }: any) {
                                     ))}
                                 </View>
                             </View>
-                        )}
+                        )} */}
 
                         {storeDetails?.observations?.length > 0 && (
                             <View className="bg-yellow-100 p-3 px-6">
