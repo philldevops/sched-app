@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, FlatList } from "react-native";
+import { Text, View, TouchableOpacity, FlatList, ScrollView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -52,22 +52,24 @@ export default function SearchResultComponent({ route, navigation }: any) {
         <View className="flex-1 bg-[#f6f8fe]">
             <StatusBar style="dark" />
             <View className="flex-1">
-                {data.length > 0 ? (
-                    data.map((category: any) => (
-                        <View key={category.id} className="mb-4">
-                            <Text className="text-blue-600 text-base font-OutfitBold uppercase px-4 mt-6 mb-3">
-                                {category.title}
-                            </Text>
-                            <View className="mx-4" focusable={false}>
-                                {renderSubItems(category.subItens)}
+                <ScrollView className="pt-3" contentContainerStyle={{ paddingBottom: 20}}>
+                    {data.length > 0 ? (
+                        data.map((category: any) => (
+                            <View key={category.id} className="">
+                                <Text className="text-blue-600 text-base font-OutfitBold uppercase px-4 mt-3 mb-3">
+                                    {category.title}
+                                </Text>
+                                <View className="mx-4" focusable={false}>
+                                    {renderSubItems(category.subItens)}
+                                </View>
                             </View>
-                        </View>
-                    ))
-                ) : (
-                    <Text className="text-gray-500 text-lg font-OutfitMedium text-center mt-5">
-                        Nenhum resultado encontrado.
-                    </Text>
-                )}
+                        ))
+                    ) : (
+                        <Text className="text-gray-500 text-lg font-OutfitMedium text-center mt-5">
+                            Nenhum resultado encontrado.
+                        </Text>
+                    )}
+                </ScrollView>
             </View>
         </View>
     );

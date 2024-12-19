@@ -29,6 +29,12 @@ export default function CategoriesComponent({ navigation }: any) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const removeAccents = (str: string) => {
+        return str
+            .normalize('NFD') // Decompõe caracteres acentuados
+            .replace(/[\u0300-\u036f]/g, ''); // Remove os caracteres diacríticos
+    };
+
     const filterData = () => {
         if (searchValue.trim().length < 3) {
             Alert.alert("Atenção", "Informe ao menos três caracteres.");
@@ -38,28 +44,47 @@ export default function CategoriesComponent({ navigation }: any) {
         if (!data) return;
 
         const filteredData = data.reduce((acc: any, category: any) => {
-            const filteredSubItems = category.subItens.filter((subItem: { title: string; }) =>
-                subItem.title.toLowerCase().includes(searchValue.toLowerCase())
-            );
-            if (
-                category.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-                filteredSubItems.length > 0
-            ) {
-                acc.push({ ...category, subItens: filteredSubItems });
+            // Normaliza o título da categoria e a especialidade
+            const normalizedCategoryTitle = removeAccents(category.title.toLowerCase());
+            const filteredSubItems = category.subItens.filter((subItem: { title: string; }) => {
+                const normalizedSubItemTitle = removeAccents(subItem.title.toLowerCase());
+                return normalizedSubItemTitle.includes(removeAccents(searchValue.toLowerCase()));
+            });
+
+            // Normaliza o termo de busca
+            const normalizedSearchValue = removeAccents(searchValue.toLowerCase());
+
+            // Filtro na categoria (clínica) e nas suas subcategorias (especialidades)
+            const isCategoryMatch = normalizedCategoryTitle.includes(normalizedSearchValue);
+            const isSpecialtyMatch = filteredSubItems.length > 0;
+
+            if (isCategoryMatch || isSpecialtyMatch) {
+                // Adicionar a clínica e suas especialidades filtradas
+                acc.push({
+                    ...category,
+                    subItens: isSpecialtyMatch ? filteredSubItems : category.subItens // Adiciona as subcategorias filtradas, se houver
+                });
             }
+
             return acc;
         }, []);
 
-        navigation.navigate("SearchResult", { data: filteredData });
+        // Verifica se há resultados filtrados antes de navegar
+        if (filteredData.length > 0) {
+            navigation.navigate("SearchResult", { data: filteredData });
+        } else {
+            Alert.alert("Nenhum resultado encontrado", "Tente novamente com outro termo de pesquisa.");
+        }
     };
 
-    const Item = ({ title, id }: { title: string | any, id: string | any }) => (
+
+    const Item = ({ title, id }: { title: string, id: string }) => (
         <TouchableOpacity
             className="bg-[#fff] shadow-gray-300 border-l-4 border-blue-500 rounded-xl flex-1 max-w-[50%] flex-row h-[70px] justify-between items-center px-4"
             style={{ elevation: 5 }}
             onPress={() =>
                 navigation.navigate("SearchResult", {
-                    data: data.filter((item) => item.title.toLowerCase().includes(title.toLowerCase())),
+                    data: data.filter((item) => item.id === id), // Aqui filtramos apenas pela ID da categoria
                 })
             }
         >
@@ -83,6 +108,8 @@ export default function CategoriesComponent({ navigation }: any) {
                 setIsLoading(false)
                 setData(data)
             }
+
+            console.log(JSON.stringify(data, null, 2))
 
         } catch (error) {
             setIsLoading(false)
