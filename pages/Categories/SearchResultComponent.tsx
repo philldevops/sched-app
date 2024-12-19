@@ -6,6 +6,8 @@ import { LinearGradient } from "expo-linear-gradient";
 export default function SearchResultComponent({ route, navigation }: any) {
     const { data } = route.params || { data: [] };
 
+    //console.log(JSON.stringify(data, null, 2))
+
     const renderSubItems = (subItens: Array<any>) => {
         return (
             <FlatList

@@ -127,7 +127,7 @@ export default function SearchResultStoreComponent({ route, navigation }: any) {
                         onPress={() =>
                             navigation.navigate("Pesquisar", {
                                 screen: "ScheduleScreen",
-                                params: { storeDetails },
+                                params: { storeDetails, store },
                             })
                         }
                         className="flex-row items-center justify-between px-4 py-3 bg-blue-500 rounded-lg mb-1"

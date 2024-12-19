@@ -5,6 +5,7 @@ import { Calendar, LocaleConfig } from "react-native-calendars";
 import DropDownPicker from "react-native-dropdown-picker";
 import { CommonActions } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import axios from "axios";
 
 // Configuração de idioma para português
 LocaleConfig.locales["pt-br"] = {
@@ -27,8 +28,9 @@ LocaleConfig.defaultLocale = "pt-br";
 export default function SchedulingComponent({ route, navigation }: any) {
     const scheduleOptions = route.params?.storeDetails?.scheduleOptions;
     const slug = route.params?.storeDetails?.slug;
+    const { store } = route.params;
     const speciality = scheduleOptions[0]?.speciality; // Especialidade definida automaticamente
-    
+
     const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
     const [schedObservations, setSchedObservations] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -40,6 +42,9 @@ export default function SchedulingComponent({ route, navigation }: any) {
 
     // Atualiza os médicos disponíveis ao carregar a especialidade
     useEffect(() => {
+        //console.log('scheduling', JSON.stringify(scheduleOptions, null, 2))
+        //console.log('route.params?.storeDetails', JSON.stringify(route.params?.storeDetails, null, 2));
+        //console.log('storeee', JSON.stringify(store, null, 2))
         if (speciality) {
             const selectedOption = scheduleOptions.find(
                 (option: any) => option.speciality === speciality
@@ -128,6 +133,67 @@ export default function SchedulingComponent({ route, navigation }: any) {
         return acc;
     }, {});
 
+
+    const submitSchedule = async () => {
+        // Validações preliminares
+        if (!selectedTime || !selectedDoctor || !selectedDate || !speciality || !store) {
+            console.log("Erro: Todos os campos devem ser preenchidos antes de agendar.");
+            return;
+        }
+
+        // Encontrar o availableSlot correspondente
+        const clinicDetails = store.details[0];
+        const scheduleOptions = clinicDetails.scheduleOptions.find(
+            (option: any) => option.speciality === speciality
+        );
+
+        if (!scheduleOptions) {
+            console.error("Erro: Nenhuma opção de especialidade encontrada.");
+            return;
+        }
+
+        const doctor = scheduleOptions.doctors.find((doc: any) => doc.name === selectedDoctor);
+
+        if (!doctor) {
+            console.error("Erro: Nenhum médico correspondente encontrado.");
+            return;
+        }
+
+        const availableSlot = doctor.availableSlots.find((slot: any) =>
+            slot.date === selectedDate && slot.times.includes(selectedTime)
+        );
+
+
+
+        if (!availableSlot) {
+            console.error("Erro: Nenhum horário disponível encontrado.");
+            return;
+        }
+
+        const scheduleData = {
+            user: 1, // Substitua por userId autenticado
+            selectedTime,
+            clinic: store,
+            speciality,
+            vacancy: availableSlot.vacancyId
+        };
+
+        try {
+            const response = await axios.post(`http://192.168.1.68:3000/schedules/`, scheduleData);
+            if (response.status === 201) {
+                //console.log("Agendamento realizado com sucesso!", JSON.stringify(response.data, null, 2));
+                return "success"
+            } else {
+                console.error("Erro ao realizar agendamento.", response.data);
+                return "failed"
+            }
+        } catch (error) {
+            console.error("Erro ao conectar ao servidor:", error);
+            return "failed"
+        }
+    };
+
+
     return (
         <View className="flex-1 bg-[#f6f8fe]">
             <ScrollView className="px-4 py-4" showsVerticalScrollIndicator={true} contentContainerStyle={{
@@ -136,8 +202,8 @@ export default function SchedulingComponent({ route, navigation }: any) {
             }}>
                 <StatusBar style="auto" />
 
-                <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
-                    Especialidade: {speciality}
+                <Text className="text-gray-600 text-2xl font-OutfitBold capitalize my-3 border-b border-gray-200">
+                    {speciality}
                 </Text>
 
                 {doctorOptions.length > 0 && (
@@ -171,7 +237,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                 {availableDates.length > 0 && (
                     <>
                         <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
-                            3. Selecione uma data:
+                            2. Selecione uma data:
                         </Text>
                         <Calendar
                             minDate={availableDates[0]}
@@ -201,17 +267,17 @@ export default function SchedulingComponent({ route, navigation }: any) {
                 {timeSlots.length > 0 && (
                     <>
                         <Text className="text-blue-600 text-base font-OutfitBold uppercase my-3">
-                            4. Selecione um horário:
+                            3. Selecione um horário:
                         </Text>
-                        <View className="flex-row flex-wrap gap-2">
+                        <View className="flex-row flex-wrap w-full space-x-2">
                             {timeSlots.map((time: string) => (
                                 <TouchableOpacity
                                     key={time}
-                                    className={`p-2 px-4 rounded-full ${selectedTime === time ? "bg-blue-500" : "bg-gray-200"}`}
+                                    className={`p-2 w-[48%] rounded-full ${selectedTime === time ? "bg-blue-500" : "bg-gray-200"}`}
                                     onPress={() => setSelectedTime(time)}
                                 >
                                     <Text
-                                        className={`font-OutfitMedium ${selectedTime === time ? "text-white" : "text-gray-700"}`}
+                                        className={`font-OutfitMedium text-center capitalize ${selectedTime === time ? "text-white" : "text-gray-700"}`}
                                     >
                                         {time}
                                     </Text>
@@ -240,27 +306,32 @@ export default function SchedulingComponent({ route, navigation }: any) {
                                     { text: "Não", style: "cancel" },
                                     {
                                         text: "Sim",
-                                        onPress: () => {
-                                            Alert.alert("Sucesso", "Agendamento realizado!");
+                                        onPress: async () => {
+                                            const result = await submitSchedule();
 
-                                            // Redefine o stack atual e navega para ScheduleDetails
-                                            navigation.dispatch(
-                                                CommonActions.reset({
-                                                    index: 0, // Define a tela inicial como SchedsScreen
-                                                    routes: [
-                                                        { name: "Scheds" }, // Scheds é a tab associada ao SchedsStack
-                                                    ],
-                                                })
-                                            );
+                                            if (result == "success") {
+                                                Alert.alert("Sucesso", "Agendamento realizado!");
 
-                                            // Após resetar o stack, navega para ScheduleDetails
-                                            setTimeout(() => {
-                                                navigation.navigate('Scheds', {
-                                                    screen: 'ScheduleDetails',
-                                                    params: {},
-                                                });
+                                                // Redefine o stack atual e navega para ScheduleDetails
+                                                navigation.dispatch(
+                                                    CommonActions.reset({
+                                                        index: 0, // Define a tela inicial como SchedsScreen
+                                                        routes: [
+                                                            { name: "Scheds" }, // Scheds é a tab associada ao SchedsStack
+                                                        ],
+                                                    })
+                                                );
 
-                                            }, 500); // Timeout curto para garantir o reset
+                                                // Após resetar o stack, navega para ScheduleDetails
+                                                setTimeout(() => {
+                                                    navigation.navigate('Scheds', {
+                                                        screen: 'ScheduleDetails',
+                                                        params: {},
+                                                    })
+                                                }, 500); // Timeout curto para garantir o reset
+                                            } else {
+                                                Alert.alert("Erro", "O agendamento falhou. Tente novamente.");
+                                            }
                                         },
                                     },
                                 ]
@@ -281,7 +352,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                         />
                     </TouchableOpacity>
                 )}
-                </ScrollView>
+            </ScrollView>
         </View>
     )
 };
