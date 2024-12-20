@@ -333,7 +333,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
                                                     })
                                                 }, 500); // Timeout curto para garantir o reset
                                             } else {
-                                                Alert.alert("Erro", "O agendamento falhou. Tente novamente.");
+                                                Alert.alert("Erro", "O agendamento falhou. Tente novamente ou verifique se você já tem um agendamento para essa vaga.");
                                             }
                                         },
                                     },

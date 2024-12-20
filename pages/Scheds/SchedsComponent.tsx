@@ -14,7 +14,7 @@ const SchedulesList = ({ schedules, navigation, color }: any) => (
                 <TouchableOpacity
                     key={schedule.id}
                     className="mb-4"
-                    onPress={() => navigation.navigate('ScheduleDetails', { scheduleId: schedule.id })}
+                    onPress={() => navigation.navigate('ScheduleDetails', { schedule })}
                 >
                     <View className="flex-row items-start gap-4">
                         {/* Data */}
@@ -28,7 +28,7 @@ const SchedulesList = ({ schedules, navigation, color }: any) => (
                         </View>
 
                         {/* Detalhes do agendamento */}
-                        <View className={`flex-1 bg-[#fff] shadow-gray-300 border-r-4 border-${color} rounded-xl p-4`}>
+                        <View className={`flex-1 bg-[#fff] shadow-gray-300 border-r-4 border-${color} rounded-xl p-4 pt-3`}>
                             <View className="flex-row justify-between items-center">
                                 <Text className="font-OutfitMedium text-gray-800 text-lg">
                                     {schedule.selectedTime === 'manha' ? 'Manhã' : schedule.selectedTime === 'tarde' ? 'Tarde' : 'Noite'}
@@ -37,9 +37,6 @@ const SchedulesList = ({ schedules, navigation, color }: any) => (
                                     #SCHD{schedule.id.toString().padStart(5, '0')}
                                 </Text>
                             </View>
-                            <Text className="font-OutfitBold text-gray-800 text-lg">
-                                {schedule.speciality.title}
-                            </Text>
                             <Text className="font-OutfitSemiBold text-gray-800 text-base mb-1">
                                 Dr. {schedule.vacancy?.doctor?.name}
                             </Text>
@@ -70,7 +67,6 @@ export default function SchedsComponent({ navigation }: any) {
     const { user } = useUser();
     const [schedules, setSchedules] = useState([]);
     const [upcoming, setUpcoming] = useState<any>([]);
-    const [future, setFuture] = useState<any>([]);
     const [completed, setCompleted] = useState<any>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -79,29 +75,19 @@ export default function SchedsComponent({ navigation }: any) {
             const now = new Date();
             const past: any[] = [];
             const upcoming: any[] = [];
-            const future: any[] = [];
 
             schedules.forEach((schedule) => {
                 const scheduleDate = new Date(schedule.vacancy.date);
 
                 if (scheduleDate < now) {
-                    past.push(schedule);
+                    past.push(schedule); // Agendamentos passados
                 } else {
-                    future.push(schedule);
+                    upcoming.push(schedule); // Agendamentos futuros e atuais
                 }
             });
 
-            if (future.length > 0) {
-                const closest = future.reduce((prev, curr) =>
-                    new Date(curr.vacancy.date) < new Date(prev.vacancy.date) ? curr : prev
-                );
-                upcoming.push(closest);
-                future.splice(future.indexOf(closest), 1);
-            }
-
-            setUpcoming(upcoming);
-            setFuture(future);
-            setCompleted(past);
+            setUpcoming(upcoming); // Todos os agendamentos futuros ou iguais à data de hoje vão para 'Próximos'
+            setCompleted(past); // Agendamentos passados vão para 'Concluídos'
         };
 
         const getSchedulesByUser = async () => {
@@ -150,21 +136,6 @@ export default function SchedsComponent({ navigation }: any) {
                             {isUpcomingVisible && <SchedulesList navigation={navigation} schedules={upcoming} color="green-500" />}
                         </View>
 
-                        {/* Futuros */}
-                        <View>
-                            <View className="flex-row justify-between items-center my-4">
-                                <Text className="text-gray-700 font-OutfitMedium text-xl">Futuros ({future.length})</Text>
-                                <TouchableOpacity onPress={() => setFutureVisible(!isFutureVisible)}>
-                                    <MaterialCommunityIcons
-                                        name={isFutureVisible ? "chevron-down" : "chevron-up"}
-                                        size={20}
-                                        color="#888"
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                            {isFutureVisible && <SchedulesList navigation={navigation} schedules={future} color="blue-500" />}
-                        </View>
-
                         {/* Concluídos */}
                         <View>
                             <View className="flex-row justify-between items-center my-4">
@@ -177,7 +148,7 @@ export default function SchedsComponent({ navigation }: any) {
                                     />
                                 </TouchableOpacity>
                             </View>
-                            {isCompletedVisible && <SchedulesList navigation={navigation} schedules={completed} color="gray-200" />}
+                            {isCompletedVisible && <SchedulesList navigation={navigation} schedules={completed} color="gray-400" />}
                         </View>
                     </ScrollView>
                 )}
