@@ -6,9 +6,17 @@ import * as ImagePicker from 'expo-image-picker'
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function ProfileComponent({ route, navigation }: any) {
-    const { signOut } = useAuth();
+    const { signOut, getToken } = useAuth();
     const { user } = useUser();
     const metaData: any = user?.unsafeMetadata as {};
+
+    const handleLogout = async () => {
+        try {
+            await signOut();  // Encerra a sessão e remove o token
+        } catch (error) {
+            console.error("Erro ao encerrar a sessão:", error);
+        }
+    };
 
 
     async function onPickImage() {
@@ -60,9 +68,7 @@ export default function ProfileComponent({ route, navigation }: any) {
             </ScrollView>
             <TouchableOpacity
                 focusable={false}
-                onPress={() =>
-                    signOut()
-                }
+                onPress={handleLogout}
                 className="flex-row items-center justify-between px-4 py-2 bg-orange-100 border border-orange-200 rounded-lg my-6"
             >
                 <View className="flex-1">

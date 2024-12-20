@@ -5,6 +5,7 @@ import { Calendar, LocaleConfig } from "react-native-calendars";
 import DropDownPicker from "react-native-dropdown-picker";
 import { CommonActions } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useUser } from "@clerk/clerk-expo";
 import axios from "axios";
 
 // Configuração de idioma para português
@@ -26,6 +27,8 @@ LocaleConfig.locales["pt-br"] = {
 LocaleConfig.defaultLocale = "pt-br";
 
 export default function SchedulingComponent({ route, navigation }: any) {
+    const { user } = useUser();
+
     const scheduleOptions = route.params?.storeDetails?.scheduleOptions;
     const slug = route.params?.storeDetails?.slug;
     const { store } = route.params;
@@ -137,7 +140,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
     const submitSchedule = async () => {
         // Validações preliminares
         if (!selectedTime || !selectedDoctor || !selectedDate || !speciality || !store) {
-            console.log("Erro: Todos os campos devem ser preenchidos antes de agendar.");
+            //console.log("Erro: Todos os campos devem ser preenchidos antes de agendar.");
             return;
         }
 
@@ -171,7 +174,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
         }
 
         const scheduleData = {
-            user: 1, // Substitua por userId autenticado
+            user: String(user?.id), // Substitua por userId autenticado
             selectedTime,
             clinic: store,
             speciality,
@@ -179,7 +182,7 @@ export default function SchedulingComponent({ route, navigation }: any) {
         };
 
         try {
-            const response = await axios.post(`http://192.168.1.68:3000/schedules/`, scheduleData);
+            const response = await axios.post(`http://10.19.30.33:3000/schedules/`, scheduleData);
             if (response.status === 201) {
                 //console.log("Agendamento realizado com sucesso!", JSON.stringify(response.data, null, 2));
                 return "success"

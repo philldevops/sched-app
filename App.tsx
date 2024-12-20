@@ -10,7 +10,6 @@ LogBox.ignoreLogs([
 ]);
 
 export default function App() {
-
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
   return (

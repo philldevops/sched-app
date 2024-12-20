@@ -17,8 +17,13 @@ import ScheduleComponent from '../pages/Scheds/ScheduleComponent';
 import LoginComponent from '../pages/Auth/LoginComponent';
 import RegisterComponent from '../pages/Auth/RegisterComponent';
 import ForgotPassComponent from '../pages/Auth/ForgotPassComponent';
-import { useUser } from '@clerk/clerk-expo';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 import ProfileComponent from '../pages/Profile/ProfileComponent';
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store'
+import { TokenCache } from '@clerk/clerk-expo/dist/cache'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const HIDDEN_ROUTES: any[] = [];
 
@@ -216,12 +221,55 @@ export const capitalize = (str: string) => {
 };
 
 
-
 export function MainTabs() {
     const navigation = useNavigation();
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);
     const { isLoaded, isSignedIn, user } = useUser();
+    const [isUserRegistered, setIsUserRegistered] = useState(false); // Estado para controlar se o usuário já está registrado
+
+    useEffect(() => {
+        const handleUserRegistration = async () => {
+            if (!user?.id) return; // Certifique-se de que o ID do usuário existe antes de continuar
+
+            const userId = user.id;
+
+            try {
+                // Verifique se o usuário já existe no banco de dados
+                const response = await axios.get(`http://10.19.30.33:3000/users/${userId}`);
+                if (response.status === 200) {
+                    console.log("Usuário já registrado no banco de dados.");
+                    setIsUserRegistered(true);
+                    return;
+                }
+            } catch (error:any) {
+                if (error.response && error.response.status === 404) {
+                    // Usuário não encontrado no banco, fazer registro
+                    //console.log("Usuário não encontrado no banco, criando registro...");
+                    try {
+                        const createUserDto = { clerkId: userId };
+                        const postResponse = await axios.post("http://10.19.30.33:3000/users", createUserDto);
+                        if (postResponse.status === 201) {
+                            //console.log("Registro de usuário realizado com sucesso!");
+                            setIsUserRegistered(true);
+                        } else {
+                            //console.error("Erro ao registrar o usuário.", postResponse.data);
+                        }
+                    } catch (postError) {
+                        //console.error("Erro ao tentar registrar o usuário no banco:", postError);
+                    }
+                } else {
+                    //console.error("Erro ao verificar se o usuário existe no banco:", error);
+                }
+            }
+        };
+
+        if (!isUserRegistered) {
+            handleUserRegistration(); // Apenas realiza o registro se ainda não foi registrado
+        }
+    }, [user?.id, isUserRegistered]);
+
+
 
 
     useEffect(() => {
@@ -230,13 +278,13 @@ export function MainTabs() {
                 appState.current.match(/inactive|background/) &&
                 nextAppState === "active"
             ) {
-                console.log("App has come to the foreground!");
+                //console.log("App has come to the foreground!");
             }
 
             appState.current = nextAppState;
             setAppStateVisible(appState.current);
 
-            console.log("AppState", appState.current); //ou appStateVisible
+            //console.log("AppState", appState.current); //ou appStateVisible
         });
 
         return () => {

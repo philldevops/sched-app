@@ -102,7 +102,7 @@ export default function CategoriesComponent({ navigation }: any) {
     const getData = async () => {
         try {
             setIsLoading(true)
-            const { data }: any = await axios.get(`http://192.168.1.68:3000/vacancies/`, {})
+            const { data }: any = await axios.get(`http://10.19.30.33:3000/vacancies/`, {})
 
             if (data) {
                 setIsLoading(false)

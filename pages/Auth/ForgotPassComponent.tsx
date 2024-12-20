@@ -44,7 +44,7 @@ export default function ForgotPassComponent({ navigation, route }: any) {
                 setActive({ session: result.createdSessionId });
                 setError('');
             } else {
-                console.log(result);
+                //console.log(result);
             }
         } catch (err: any) {
             console.error('error', err.errors[0]?.longMessage || err.message);

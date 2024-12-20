@@ -4,7 +4,8 @@ import Constants from "expo-constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from "expo-web-browser"
-import { useOAuth, useUser, useSignIn } from '@clerk/clerk-expo';
+import { useOAuth, useUser, useSignIn, useAuth } from '@clerk/clerk-expo';
+import axios from 'axios';
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -14,6 +15,7 @@ export default function LoginComponent({ route, navigation }: any) {
     const googleOAuth = useOAuth({ strategy: "oauth_google" });
     const { signIn, setActive, isLoaded } = useSignIn()
     const { user } = useUser();
+    const { userId } = useAuth();
 
     const [emailAddress, setEmailAddress] = useState('')
     const [password, setPassword] = useState('')
@@ -58,16 +60,45 @@ export default function LoginComponent({ route, navigation }: any) {
         }
     }, [isLoaded, emailAddress, password])
 
+
+    const handleRegister = async () => {
+        const clerkId = user?.id; // Obtenha o ID do usuário
+        const createUserDto = { clerkId }; // Formate como um objeto
+
+        try {
+            const response = await axios.post('http://10.19.30.33:3000/users/', createUserDto);
+            console.log(JSON.stringify(response, null, 2))
+            if (response.status === 201) {
+                //console.log("registro de usuário realizado com sucesso!", JSON.stringify(response.data, null, 2));
+                return "success"
+            } else {
+                console.error("Erro ao realizar agendamento.", response.data);
+                return "failed"
+            }
+        } catch (error) {
+            console.error("Erro ao conectar ao servidor:", error);
+            return "failed"
+        }
+    }
+
     async function SignIn() {
         try {
             setIsLoading(true)
-
             const oAuthFlow = await googleOAuth.startOAuthFlow()
 
             if (oAuthFlow.authSessionResult?.type === "success") {
                 if (oAuthFlow.setActive) {
                     await oAuthFlow.setActive({ session: oAuthFlow.createdSessionId })
                 }
+                
+                console.log(userId)
+                console.log(user?.id);
+                
+                
+                //fazer também o registro no back-end, caso ainda não tenha.
+                //const result = await handleRegister();
+                //console.log(result);
+
                 setIsLoading(false)
             } else {
                 setIsLoading(false)

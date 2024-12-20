@@ -1,213 +1,186 @@
 import { StatusBar } from "expo-status-bar";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import { useEffect, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
+import { useUser } from "@clerk/clerk-expo";
+import axios from "axios";
 
-export default function SchedsComponent({ navigation, route }: any) {
+// Lista de agendamentos
+const SchedulesList = ({ schedules, navigation, color }: any) => (
+    <View>
+        {schedules.length > 0 ? (
+            schedules.map((schedule: any) => (
+                <TouchableOpacity
+                    key={schedule.id}
+                    className="mb-4"
+                    onPress={() => navigation.navigate('ScheduleDetails', { scheduleId: schedule.id })}
+                >
+                    <View className="flex-row items-start gap-4">
+                        {/* Data */}
+                        <View className="items-center">
+                            <Text className={`text-${color} font-OutfitBold text-lg`}>
+                                {new Date(schedule.vacancy.date).toLocaleString('pt-BR', { month: 'short' }).toUpperCase()}
+                            </Text>
+                            <Text className={`text-${color} font-OutfitBold text-2xl`}>
+                                {new Date(schedule.vacancy.date).getDate()}
+                            </Text>
+                        </View>
+
+                        {/* Detalhes do agendamento */}
+                        <View className={`flex-1 bg-[#fff] shadow-gray-300 border-r-4 border-${color} rounded-xl p-4`}>
+                            <View className="flex-row justify-between items-center">
+                                <Text className="font-OutfitMedium text-gray-800 text-lg">
+                                    {schedule.selectedTime === 'manha' ? 'Manhã' : schedule.selectedTime === 'tarde' ? 'Tarde' : 'Noite'}
+                                </Text>
+                                <Text className="text-gray-500 font-OutfitMedium text-sm">
+                                    #SCHD{schedule.id.toString().padStart(5, '0')}
+                                </Text>
+                            </View>
+                            <Text className="font-OutfitBold text-gray-800 text-lg">
+                                {schedule.speciality.title}
+                            </Text>
+                            <Text className="font-OutfitSemiBold text-gray-800 text-base mb-1">
+                                Dr. {schedule.vacancy?.doctor?.name}
+                            </Text>
+                            <View className="flex-row justify-start items-center space-x-2">
+                                <Text className="font-OutfitRegular text-gray-600 text-base">
+                                    {schedule.speciality.title}
+                                </Text>
+                                <Text>|</Text>
+                                <Text className="font-OutfitRegular text-gray-600 text-base">
+                                    {schedule.clinic.name}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            ))
+        ) : (
+            <Text className="text-gray-500 text-center">Nenhum agendamento encontrado.</Text>
+        )}
+    </View>
+);
+
+
+export default function SchedsComponent({ navigation }: any) {
     const [isUpcomingVisible, setUpcomingVisible] = useState(true);
     const [isFutureVisible, setFutureVisible] = useState(true);
     const [isCompletedVisible, setCompletedVisible] = useState(true);
+    const { user } = useUser();
+    const [schedules, setSchedules] = useState([]);
+    const [upcoming, setUpcoming] = useState<any>([]);
+    const [future, setFuture] = useState<any>([]);
+    const [completed, setCompleted] = useState<any>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const categorizeSchedules = (schedules: any[]) => {
+            const now = new Date();
+            const past: any[] = [];
+            const upcoming: any[] = [];
+            const future: any[] = [];
+
+            schedules.forEach((schedule) => {
+                const scheduleDate = new Date(schedule.vacancy.date);
+
+                if (scheduleDate < now) {
+                    past.push(schedule);
+                } else {
+                    future.push(schedule);
+                }
+            });
+
+            if (future.length > 0) {
+                const closest = future.reduce((prev, curr) =>
+                    new Date(curr.vacancy.date) < new Date(prev.vacancy.date) ? curr : prev
+                );
+                upcoming.push(closest);
+                future.splice(future.indexOf(closest), 1);
+            }
+
+            setUpcoming(upcoming);
+            setFuture(future);
+            setCompleted(past);
+        };
+
+        const getSchedulesByUser = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get(`http://10.19.30.33:3000/schedules/clerk/${user?.id}`);
+                if (response.status === 200) {
+                    const data = response.data.schedules || [];
+                    setSchedules(data);
+                    categorizeSchedules(data);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar agendamentos:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        getSchedulesByUser();
+    }, [user]);
 
     return (
         <View className="flex-1 bg-[#f6f8fe]" style={{ paddingTop: Constants.statusBarHeight * 1.3 }}>
             <StatusBar style="auto" />
             <View className="px-4 pb-[1px]">
-                <View className="flex-row justify-between items-center mb-4">
-                    <Text className="text-gray-800 font-OutfitBold text-2xl">Meus Agendamentos</Text>
-                    {/* <MaterialCommunityIcons name="dots-vertical" size={24} color="#888" /> */}
-                </View>
+                <Text className="text-gray-800 font-OutfitBold text-2xl mb-4">Meus Agendamentos</Text>
 
-                <ScrollView className="border-t border-gray-200" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 50, paddingTop: 20 }}>
-                    <View>
-                        <View className="flex-row justify-between items-center mb-2">
-                            <Text className="text-gray-700 font-OutfitMedium text-xl">Próximos (1)</Text>
-                            <TouchableOpacity
-                                onPress={() => setUpcomingVisible(!isUpcomingVisible)}
-                            >
-                                <MaterialCommunityIcons
-                                    name={isUpcomingVisible ? "chevron-down" : "chevron-up"}
-                                    size={20}
-                                    color="#888"
-                                />
-                            </TouchableOpacity>
-                        </View>
-
-                        {isUpcomingVisible && (
-                            <>
-                                <TouchableOpacity className="mb-4" onPress={() => navigation.navigate('ScheduleDetails')}>
-                                    <View className="flex-row items-start gap-4">
-                                        <View className="items-center">
-                                            <Text className="text-green-500 font-OutfitBold text-lg">DEZ</Text>
-                                            <Text className="text-green-500 font-OutfitBold text-2xl">12</Text>
-                                            {/* <View className="w-1 bg-green-500 flex-1 rounded-full mt-2"></View> */}
-                                        </View>
-
-                                        <View className="flex-1 bg-[#fff] shadow-gray-300 border-r-4 border-green-500 rounded-xl p-4">
-                                            <View className="flex-row justify-between items-center">
-                                                <Text className="font-OutfitMedium text-gray-800 text-lg">
-                                                    10:00 - 11:00 AM
-                                                </Text>
-                                                <Text className="text-gray-500 font-OutfitMedium text-sm">
-                                                    #RSV10102
-                                                </Text>
-                                            </View>
-                                            <Text className="font-OutfitBold text-gray-800 text-lg mb-1">
-                                                Tooth Scaling
-                                            </Text>
-                                            <View className="flex-row justify-start items-center space-x-2">
-                                                <Text className="font-OutfitRegular text-gray-600 text-base">
-                                                    Pediatra
-                                                </Text>
-                                                <Text>|</Text>
-                                                <Text className="font-OutfitRegular text-gray-600 text-base">
-                                                    Clínica Unimed
-                                                </Text>
-                                            </View>
-                                            {/* <View className="flex-row flex-wrap gap-2 my-2">
-                                                <TouchableOpacity className="bg-purple-200 rounded-full px-2 py-1 self-start">
-                                                    <Text className="text-purple-600 font-OutfitMedium text-xs">
-                                                        SOMENTE DINHEIRO
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            </View> */}
-                                        </View>
-                                    </View>
+                {isLoading ? (
+                    <View className="h-[90%] justify-center items-center">
+                        <ActivityIndicator size={22} color={"blue"} />
+                    </View>
+                ) : (
+                    <ScrollView contentContainerStyle={{ paddingBottom: 50, paddingTop: 20 }}>
+                        {/* Próximos */}
+                        <View>
+                            <View className="flex-row justify-between items-center mb-2">
+                                <Text className="text-gray-700 font-OutfitMedium text-xl">Próximos ({upcoming.length})</Text>
+                                <TouchableOpacity onPress={() => setUpcomingVisible(!isUpcomingVisible)}>
+                                    <MaterialCommunityIcons
+                                        name={isUpcomingVisible ? "chevron-down" : "chevron-up"}
+                                        size={20}
+                                        color="#888"
+                                    />
                                 </TouchableOpacity>
-                            </>
-                        )}
-                    </View>
-
-                    <View>
-                        <View className="flex-row justify-between items-center my-4">
-                            <Text className="text-gray-700 font-OutfitMedium text-xl">Futuros (2)</Text>
-                            <TouchableOpacity
-                                onPress={() => setFutureVisible(!isFutureVisible)}
-                            >
-                                <MaterialCommunityIcons
-                                    name={isFutureVisible ? "chevron-down" : "chevron-up"}
-                                    size={20}
-                                    color="#888"
-                                />
-                            </TouchableOpacity>
+                            </View>
+                            {isUpcomingVisible && <SchedulesList navigation={navigation} schedules={upcoming} color="green-500" />}
                         </View>
 
-                        {isFutureVisible &&
-                            [1, 2].map((item, index) => (
-                                <View key={index} className="mb-4">
-                                    <View className="flex-row items-start gap-4">
-                                        <View className="items-center">
-                                            <Text className="text-blue-500 font-OutfitBold text-lg">DEZ</Text>
-                                            <Text className="text-blue-500 font-OutfitBold text-2xl">20</Text>
-                                            {/* <View className="w-1 flex-1 top-[-2] bg-blue-500 rounded-full mt-2"></View> */}
-                                        </View>
-
-                                        <View className="flex-1 bg-[#fff] shadow-gray-300 border-r-4 border-blue-500 rounded-xl p-4">
-                                            <View className="flex-row justify-between items-center">
-                                                <Text className="font-OutfitMedium text-gray-800 text-lg">
-                                                    09:00 - 10:00 AM
-                                                </Text>
-                                                <Text className="text-gray-500 font-OutfitMedium text-sm">
-                                                    #RSV10105
-                                                </Text>
-                                            </View>
-                                            <View className="flex-row flex-wrap items-center justify-start">
-                                                <Text className="font-OutfitBold text-gray-800 text-lg mb-1">
-                                                    Dr. Paula Fernandes
-                                                </Text>
-                                                <View className="flex-row justify-start items-center space-x-2">
-                                                    <Text className="font-OutfitRegular text-gray-600 text-base">
-                                                        Pediatra
-                                                    </Text>
-                                                    <Text>|</Text>
-                                                    <Text className="font-OutfitRegular text-gray-600 text-base">
-                                                        Clínica Unimed
-                                                    </Text>
-                                                </View>
-                                                {/* <View className="flex-row flex-wrap gap-2 py-2 mt-2">
-                                                    <TouchableOpacity className="bg-purple-200 rounded-full px-2 py-1 self-start">
-                                                        <Text className="text-purple-600 font-OutfitMedium text-xs">
-                                                            SOMENTE DINHEIRO
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity className="bg-green-200 rounded-full px-2 py-1 self-start">
-                                                        <Text className="text-green-600 font-OutfitMedium text-xs">
-                                                            ORDEM DE CHEGADA
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity className="bg-indigo-200 rounded-full px-2 py-1 self-start">
-                                                        <Text className="text-indigo-600 font-OutfitMedium text-xs">
-                                                            LOREM
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                </View> */}
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-                            ))}
-                    </View>
-
-
-                    <View>
-                        <View className="flex-row justify-between items-center my-4">
-                            <Text className="text-gray-700 font-OutfitMedium text-xl">
-                                Concluídos/Expirados (2)
-                            </Text>
-                            <TouchableOpacity
-                                onPress={() => setCompletedVisible(!isCompletedVisible)}
-                            >
-                                <MaterialCommunityIcons
-                                    name={isCompletedVisible ? "chevron-down" : "chevron-up"}
-                                    size={20}
-                                    color="#888"
-                                />
-                            </TouchableOpacity>
+                        {/* Futuros */}
+                        <View>
+                            <View className="flex-row justify-between items-center my-4">
+                                <Text className="text-gray-700 font-OutfitMedium text-xl">Futuros ({future.length})</Text>
+                                <TouchableOpacity onPress={() => setFutureVisible(!isFutureVisible)}>
+                                    <MaterialCommunityIcons
+                                        name={isFutureVisible ? "chevron-down" : "chevron-up"}
+                                        size={20}
+                                        color="#888"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            {isFutureVisible && <SchedulesList navigation={navigation} schedules={future} color="blue-500" />}
                         </View>
 
-                        {/* Completed Cards */}
-                        {isCompletedVisible &&
-                            [1, 2].map((item, index) => (
-                                <View key={index} className="mb-4">
-                                    <View className="flex-row items-start gap-4">
-                                        <View className="items-center">
-                                            <Text className="text-gray-300 font-OutfitBold text-lg">DEZ</Text>
-                                            <Text className="text-gray-300 font-OutfitBold text-2xl">2</Text>
-                                            {/* <View className="w-1 bg-gray-300 flex-1 top-[-2] rounded-full mt-2"></View> */}
-                                        </View>
-
-                                        <View className="flex-1 bg-[#fff] shadow-gray-300 border-r-4 border-gray-200 rounded-xl p-4">
-                                            <View className="flex-row justify-between items-center">
-                                                <Text className="font-OutfitMedium text-gray-400 text-lg">
-                                                    09:00 - 10:00 AM
-                                                </Text>
-                                                <Text className="text-gray-400 font-OutfitMedium text-sm">
-                                                    #RSV10105
-                                                </Text>
-                                            </View>
-                                            <View className="">
-                                                <Text className="font-OutfitBold text-gray-400 text-lg mb-1">
-                                                    Dr. Paula Fernandes
-                                                </Text>
-                                                <Text className="font-OutfitRegular text-gray-400 text-sm">
-                                                    Pediatra
-                                                </Text>
-                                                <Text className="text-gray-500 font-OutfitRegular text-sm flex-row items-center mt-1">
-                                                    <MaterialCommunityIcons
-                                                        name="office-building"
-                                                        size={16}
-                                                        color="#888"
-                                                    />
-                                                    {"  "}Clínica Unimed
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-                            ))}
-                    </View>
-                </ScrollView>
+                        {/* Concluídos */}
+                        <View>
+                            <View className="flex-row justify-between items-center my-4">
+                                <Text className="text-gray-700 font-OutfitMedium text-xl">Concluídos ({completed.length})</Text>
+                                <TouchableOpacity onPress={() => setCompletedVisible(!isCompletedVisible)}>
+                                    <MaterialCommunityIcons
+                                        name={isCompletedVisible ? "chevron-down" : "chevron-up"}
+                                        size={20}
+                                        color="#888"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            {isCompletedVisible && <SchedulesList navigation={navigation} schedules={completed} color="gray-200" />}
+                        </View>
+                    </ScrollView>
+                )}
             </View>
         </View>
     );
